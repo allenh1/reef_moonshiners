@@ -1,0 +1,15 @@
+# - Config file for the reef_moonshiners package
+# It defines the following variables
+#  reef_moonshiners_INCLUDE_DIRS - include directories for FooBar
+#  reef_moonshiners_LIBRARIES    - libraries to link against
+#  reef_moonshiners_EXECUTABLE   - the bar executable
+
+set(reef_moonshiners_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("${reef_moonshiners_DIR}/export_reef_moonshiners.cmake")
+
+# These are IMPORTED targets created by reef_moonshinersTargets.cmake
+
+set(reef_moonshiners_EXECUTABLE reef_moonshiners)
+

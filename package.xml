@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>reef_moonshiners</name>
+  <version>0.0.0</version>
+  <description>Reef moonshiners app</description>
+  <maintainer email="hunter@allen-software.com">Hunter L. Allen</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>libqt5-core</depend>
+  <depend>libqt5-gui</depend>
+  <depend>libqt5-network</depend>
+  <depend>libqt5-widgets</depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>
