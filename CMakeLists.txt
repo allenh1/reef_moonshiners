@@ -13,10 +13,7 @@ endif()
 
 
 # find dependencies
-find_package(libqt5-core REQUIRED)
-find_package(libqt5-gui REQUIRED)
-find_package(libqt5-network REQUIRED)
-find_package(libqt5-widgets REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Network)
 
 set(sources
   src/reef_moonshiners.cpp
@@ -80,3 +77,14 @@ install(EXPORT export_reef_moonshiners
   DESTINATION "share/${PROJECT_NAME}/cmake"
   FILE export_reef_moonshiners.cmake
   COMPONENT dev)
+
+
+# testing
+if(NOT SKIP_TESTS)
+  enable_testing()
+  find_package(GTest REQUIRED)
+
+  add_executable(test_dailies test/test_dailies.cpp)
+  target_link_libraries(test_dailies GTest::gtest GTest::gtest_main reef_moonshiners)
+  add_test(TestDailes test_dailies)
+endif()

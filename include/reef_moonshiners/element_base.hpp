@@ -2,16 +2,43 @@
 #define REEF_MOONSHINERS__ELEMENT_BASE_HPP_
 
 #include <string>
+#include <cmath>
 #include <chrono>
 
 namespace reef_moonshiners
 {
 
+constexpr double gallons_to_liters(const double gallons)
+{
+  return std::ceil(gallons * 3.78541 * 10) / 10;
+}
+
+template<size_t places>
+constexpr double round_places(const double d)
+{
+  return round_places<places - 1>(d * 10) / 10;
+}
+
+template<>
+constexpr double round_places<1>(const double d)
+{
+  return std::ceil(d * 10) / 10;
+}
+
 class ElementBase
 {
 public:
-  ElementBase() = default;
-  explicit ElementBase(const std::string & _name, const double _element_concentration);
+  ElementBase() = delete;
+  /**
+   * @brief Construct an element
+   * @param _name Name of the element
+   * @param _element_concentration Supplement concentration in micrograms per liter
+   * @param _target_concentration Targeted concentration in micrograms per liter
+   * @param _max_dose Maximum adjustment in micrograms per liter per day
+   */
+  explicit ElementBase(
+    const std::string & _name, const double _element_concentration,
+    const double _target_concentration, const double _max_adjustment);
   virtual ~ElementBase() = default;
 
   /**
@@ -65,10 +92,12 @@ public:
 
   double get_element_concentration() const;
 
+  static void set_tank_size(const double _tank_size);
+
 protected:
   double _get_concentration_after_dose(
-    const double _dose_ml, const double _current_concentration,
-    const double _element_concentration);
+    const double _dose_ml,
+    const double _prior_concentration) const;
 
 private:
   /// name of the element
@@ -79,12 +108,14 @@ private:
   std::chrono::year_month_day m_last_measurement;
   /// last measured concentration
   double m_last_measured_concentration = 0.0;
-  /// maximum dosage for this element
-  double m_max_dosage = 0.0;
   /// tank size (liters)
   inline static double m_tank_size = 0.0;
   /// element concentration in micrograms per liter
-  double m_element_concentration = 0.0;
+  const double m_element_concentration;
+  /// target concentration in micrograms per liter
+  const double m_target_concentration;
+  /// maximum adjustment for this element (micrograms per liter per day)
+  const double m_max_adjustment;
 };
 
 }  // namespace reef_moonshiners
