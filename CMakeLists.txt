@@ -13,27 +13,42 @@ endif()
 
 
 # find dependencies
-find_package(libqt5-core REQUIRED)
-find_package(libqt5-gui REQUIRED)
-find_package(libqt5-network REQUIRED)
-find_package(libqt5-widgets REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Network)
 
-add_executable(reef_moonshiners src/reef_moonshiners.cpp)
+set(sources
+  src/reef_moonshiners.cpp
+)
+
+add_library(reef_moonshiners
+  src/element_base.cpp
+  src/daily_element.cpp
+  src/correction_element.cpp
+)
 target_include_directories(reef_moonshiners PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
-  PUBLIC ${libqt5-core_INCLUDE_DIRS}
-  PUBLIC ${libqt5-gui_INCLUDE_DIRS}
-  PUBLIC ${libqt5-network_INCLUDE_DIRS}
-  PUBLIC ${libqt5-widgets_INCLUDE_DIRS}
 )
 target_compile_features(reef_moonshiners PUBLIC c_std_11 cxx_std_20)  # Require C11 and C++20
-target_link_libraries(reef_moonshiners
- ${libqt5-core_LIBRARIES}
- ${libqt5-gui_LIBRARIES}
- ${libqt5-network_LIBRARIES}
- ${libqt5-widgets_LIBRARIES}
-)
+
+# add_executable(reef_moonshiners_ui src/reef_moonshiners.cpp)
+# target_include_directories(reef_moonshiners_ui PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>
+#   PUBLIC ${libqt5-core_INCLUDE_DIRS}
+#   PUBLIC ${libqt5-gui_INCLUDE_DIRS}
+#   PUBLIC ${libqt5-network_INCLUDE_DIRS}
+#   PUBLIC ${libqt5-widgets_INCLUDE_DIRS}
+# )
+#
+# target_compile_features(reef_moonshiners_ui PUBLIC c_std_11 cxx_std_20)  # Require C11 and C++20
+#
+# target_link_libraries(reef_moonshiners_ui
+#  reef_moonshiners
+#  ${libqt5-core_LIBRARIES}
+#  ${libqt5-gui_LIBRARIES}
+#  ${libqt5-network_LIBRARIES}
+#  ${libqt5-widgets_LIBRARIES}
+# )
 
 install(
   TARGETS reef_moonshiners
@@ -62,3 +77,18 @@ install(EXPORT export_reef_moonshiners
   DESTINATION "share/${PROJECT_NAME}/cmake"
   FILE export_reef_moonshiners.cmake
   COMPONENT dev)
+
+
+# testing
+if(NOT SKIP_TESTS)
+  enable_testing()
+  find_package(GTest REQUIRED)
+
+  add_executable(test_dailies test/test_dailies.cpp)
+  target_link_libraries(test_dailies GTest::gtest GTest::gtest_main reef_moonshiners)
+  add_test(TestDailes test_dailies)
+
+  add_executable(test_corrections test/test_corrections.cpp)
+  target_link_libraries(test_corrections GTest::gtest GTest::gtest_main reef_moonshiners)
+  add_test(TestCorrections test_corrections)
+endif()
