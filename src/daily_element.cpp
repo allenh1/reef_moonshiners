@@ -26,7 +26,7 @@ DailyElement::DailyElement(
 {
 }
 
-double DailyElement::get_dose(const std::chrono::year_month_day &)
+double DailyElement::get_dose(const std::chrono::year_month_day &) const
 {
   if (this->get_current_concentration_estimate() >= this->get_target_concentration()) {
     /* no need to supplement this, we should not be detecting these elements */

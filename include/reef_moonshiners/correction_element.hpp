@@ -48,6 +48,11 @@ constexpr year_month_day operator+(const year_month_day & lhs, const days & rhs)
 {
   return year_month_day(sys_days{lhs} + rhs);
 }
+
+constexpr days operator-(const year_month_day & lhs, const year_month_day & rhs)
+{
+  return sys_days{lhs} - sys_days{rhs};
+}
 }  // namespace chrono
 }  // namespace std
 
@@ -62,13 +67,36 @@ public:
     const double _target_concentration, const double _max_adjustment);
   ~CorrectionElement() override = default;
 
-  double get_dose(const std::chrono::year_month_day &) override;
+  double get_dose(const std::chrono::year_month_day &) const override;
 
   double get_current_concentration_estimate() const override;
+
+  /**
+   * @brief Access date on which we started corrections
+   * @return Date corrections started
+   */
+  const std::chrono::year_month_day & get_correction_start_date() const;
+
+  void set_correction_start_date(const std::chrono::year_month_day & _correction_start_date);
+
+  /**
+   * @brief Test function for future doses
+   *
+   * There is no assumed consumption of this element.
+   *
+   * @param date Date to which we iterate
+   *
+   * @return Concentration of this element on date, after doses have applied
+   */
+  double get_concentration_estimate(const std::chrono::year_month_day & date) const;
 
   void apply_dose(const double _dose, const std::chrono::year_month_day & _date) override;
 
 private:
+  constexpr double _concentration_after_dose(const double dose_l);
+
+  std::chrono::year_month_day m_correction_start_date;
+
   /// map of date -> mL dosed
   std::unordered_map<std::chrono::year_month_day, double> m_dosed_amounts;
 };

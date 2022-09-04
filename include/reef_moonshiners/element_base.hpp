@@ -22,11 +22,6 @@
 namespace reef_moonshiners
 {
 
-constexpr double gallons_to_liters(const double gallons)
-{
-  return std::ceil(gallons * 3.78541 * 10) / 10;
-}
-
 template<size_t places>
 constexpr double round_places(const double d)
 {
@@ -37,6 +32,29 @@ template<>
 constexpr double round_places<1>(const double d)
 {
   return std::ceil(d * 10) / 10;
+}
+
+template<>
+constexpr double round_places<0>(const double d)
+{
+  return std::round(d);
+}
+
+template<size_t places>
+constexpr double truncate_places(const double d)
+{
+  return truncate_places<places - 1>(d * 10) / 10;
+}
+
+template<>
+constexpr double truncate_places<1>(const double d)
+{
+  return std::floor(d * 10) / 10;
+}
+
+constexpr double gallons_to_liters(const double gallons)
+{
+  return gallons * 3.78541;
 }
 
 class ElementBase
@@ -80,8 +98,14 @@ public:
    *
    * @return Dosage in milliliters
    */
-  virtual double get_dose(const std::chrono::year_month_day & day) = 0;
+  virtual double get_dose(const std::chrono::year_month_day & day) const = 0;
 
+  /**
+   * @brief Mark a dose as done for for the given date in the given ammount
+   *
+   * @param _dose Amount of the element dosed, in mL
+   * @param _date Date the dose occured
+   */
   virtual void apply_dose(const double _dose, const std::chrono::year_month_day & _date) = 0;
 
   /**
@@ -112,6 +136,12 @@ protected:
   double _get_concentration_after_dose(
     const double _dose_ml,
     const double _prior_concentration) const;
+
+  /**
+   * @brief Access maximum dosage in liters
+   * @return Maximum daily dose in Liters
+   */
+  double _max_daily_dosage_l(const double concentration) const;
 
 private:
   /// name of the element

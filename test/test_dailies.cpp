@@ -35,9 +35,9 @@ TEST(TestDailes, test_iron)
   EXPECT_DOUBLE_EQ(iron_element.get_current_concentration_estimate(), 0.0);
   EXPECT_DOUBLE_EQ(iron_element.get_dose(now), 0.04);
   /* change tank size to 300 gallons */
-  // reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(300));
-  // EXPECT_DOUBLE_EQ(iron_element.get_current_concentration_estimate(), 0.0);
-  // EXPECT_DOUBLE_EQ(iron_element.get_dose(now), 0.11);
+  reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(300));
+  EXPECT_DOUBLE_EQ(iron_element.get_current_concentration_estimate(), 0.0);
+  EXPECT_DOUBLE_EQ(iron_element.get_dose(now), 0.11);
 }
 
 TEST(TestDailes, test_selenium)
@@ -59,7 +59,7 @@ TEST(TestDailes, test_selenium)
   EXPECT_DOUBLE_EQ(element.get_current_concentration_estimate(), 0.0);
   EXPECT_DOUBLE_EQ(element.get_dose(now), 0.08);
   /* change tank size to 300 gallons */
-  // reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(300));
-  // EXPECT_DOUBLE_EQ(iron_element.get_current_concentration_estimate(), 0.0);
-  // EXPECT_DOUBLE_EQ(iron_element.get_dose(now), 0.11);
+  reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(300));
+  EXPECT_DOUBLE_EQ(element.get_current_concentration_estimate(), 0.0);
+  EXPECT_DOUBLE_EQ(element.get_dose(now), 0.23);
 }

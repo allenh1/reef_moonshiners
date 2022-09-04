@@ -87,4 +87,8 @@ if(NOT SKIP_TESTS)
   add_executable(test_dailies test/test_dailies.cpp)
   target_link_libraries(test_dailies GTest::gtest GTest::gtest_main reef_moonshiners)
   add_test(TestDailes test_dailies)
+
+  add_executable(test_corrections test/test_corrections.cpp)
+  target_link_libraries(test_corrections GTest::gtest GTest::gtest_main reef_moonshiners)
+  add_test(TestCorrections test_corrections)
 endif()

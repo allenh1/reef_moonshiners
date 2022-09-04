@@ -92,4 +92,11 @@ double ElementBase::_get_concentration_after_dose(
   return total_micrograms / m_tank_size;
 }
 
+double ElementBase::_max_daily_dosage_l(const double concentration) const
+{
+  /* max adjustment is in ug / (L * day) */
+  return (m_max_adjustment * m_tank_size) /
+         (m_element_concentration - concentration - m_max_adjustment);
+}
+
 }  // namespace reef_moonshiners

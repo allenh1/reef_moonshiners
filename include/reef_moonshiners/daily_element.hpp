@@ -28,7 +28,7 @@ public:
     const double _target_concentration, const double _max_adjustment);
   ~DailyElement() override = default;
 
-  double get_dose(const std::chrono::year_month_day &) override;
+  double get_dose(const std::chrono::year_month_day &) const override;
 
   double get_current_concentration_estimate() const override;
 
