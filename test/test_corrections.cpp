@@ -92,13 +92,13 @@ TEST(TestCorrections, test_molybdenum)
 {
   std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
       std::chrono::system_clock::now())};
-  reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(100));
+  reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(300));
   reef_moonshiners::Molybdenum element;
   element.set_concentration(12, now);
   element.set_correction_start_date(now);
   EXPECT_EQ(element.get_correction_start_date(), now);
   EXPECT_DOUBLE_EQ(element.get_concentration_estimate(now), 12);
-  // EXPECT_DOUBLE_EQ(element.get_dose(now), 11.36);
+  EXPECT_DOUBLE_EQ(element.get_dose(now), 34.07);
   element.apply_dose(element.get_dose(now), now);
   /* move forward another day */
   now = (now + std::chrono::days(1));

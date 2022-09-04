@@ -26,7 +26,7 @@ ElementBase::ElementBase(
   m_max_adjustment(_max_adjustment)
 {}
 
-const std::string & ElementBase::get_name()
+const std::string & ElementBase::get_name() const
 {
   return m_name;
 }
