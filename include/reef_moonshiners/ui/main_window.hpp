@@ -21,6 +21,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QCalendarWidget>
+#include <QDockWidget>
+#include <QToolBar>
 
 #include <reef_moonshiners/elements.hpp>
 
@@ -44,8 +46,14 @@ private:
   QVBoxLayout m_main_layout;
   QVBoxLayout m_list_layout;
   QLabel m_dose_label;
+  QDockWidget m_calendar_widget;
   QWidget m_central_widget;
   QCalendarWidget m_calendar;
+  QToolBar m_toolbar;
+  QAction m_import_action;
+  QAction m_settings_action;
+  QAction m_calendar_action;
+  QAction m_about_action;
 
   std::vector<std::unique_ptr<reef_moonshiners::ElementBase>> m_elements;
 };

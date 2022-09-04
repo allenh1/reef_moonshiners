@@ -19,7 +19,11 @@ namespace reef_moonshiners::ui
 
 MainWindow::MainWindow(QWidget * parent)
 : QMainWindow(parent),
-  m_dose_label(tr("Dosing Summary"))
+  m_dose_label(tr("Dosing Summary")),
+  m_import_action(tr("Import ICP Data")),
+  m_settings_action(tr("Settings")),
+  m_calendar_action(tr("Calendar")),
+  m_about_action(tr("About"))
 {
   reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(75));
   this->_populate_list_layout();
@@ -27,6 +31,13 @@ MainWindow::MainWindow(QWidget * parent)
   m_main_layout.addWidget(&m_calendar);
   m_main_layout.addWidget(&m_dose_label);
   m_main_layout.addLayout(&m_list_layout);
+
+  m_toolbar.addAction(&m_import_action);
+  m_toolbar.addAction(&m_settings_action);
+  m_toolbar.addAction(&m_calendar_action);
+  m_toolbar.addAction(&m_about_action);
+
+  this->addToolBar(&m_toolbar);
 
   m_central_widget.setLayout(&m_main_layout);
   this->setCentralWidget(&m_central_widget);
@@ -50,7 +61,7 @@ void MainWindow::_populate_list_layout()
   this->_fill_element_list();
   for (const auto & element : m_elements) {
     element->set_concentration(0.0, now);
-    QHBoxLayout * layout  = new QHBoxLayout();
+    QHBoxLayout * layout = new QHBoxLayout();
     QCheckBox * check = new QCheckBox();
     QSizePolicy current = check->sizePolicy();
     current.setHorizontalStretch(0);
