@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cstdio>
+#include <QApplication>
+#include <QtWidgets>
+
+#include <reef_moonshiners/element_base.hpp>
+#include <reef_moonshiners/ui/main_window.hpp>
 
 int main(int argc, char ** argv)
 {
-  (void) argc;
-  (void) argv;
-
-  printf("hello world reef_moonshiners package\n");
-  return 0;
+  QApplication app{argc, argv};
+  reef_moonshiners::ui::MainWindow main_window;
+  app.setActiveWindow(&main_window);
+  main_window.show();
+  return app.exec();
 }

@@ -77,7 +77,7 @@ public:
    * @brief access the element name
    * @return element name
    */
-  const std::string & get_name();
+  const std::string & get_name() const;
 
   /**
    * @brief Set the element name
