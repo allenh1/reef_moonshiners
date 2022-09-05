@@ -32,9 +32,12 @@ public:
 
   double get_current_concentration_estimate() const override;
 
+  void set_multiplier(const double _multiplier);
+
   void apply_dose(const double, const std::chrono::year_month_day & _date) override;
 
 private:
+  double m_multiplier = 1.0;
 };
 
 #define DAILY_ELEMENT(name, element_concentration, target_concentration, max_adjustment) \

@@ -27,6 +27,7 @@
 #include <reef_moonshiners/elements.hpp>
 
 #include <reef_moonshiners/ui/element_display.hpp>
+#include <reef_moonshiners/ui/settings_window.hpp>
 
 namespace reef_moonshiners::ui
 {
@@ -43,6 +44,12 @@ protected:
   void _fill_element_list();
   void _populate_list_layout();
 
+  Q_SLOT void _activate_settings_window();
+  Q_SLOT void _activate_calendar_window();
+
+  Q_SLOT void _update_refugium_state(int state);
+  Q_SLOT void _update_tank_size(const QString & text);
+
 private:
   QVBoxLayout * m_p_main_layout = nullptr;
   QVBoxLayout * m_p_list_layout = nullptr;
@@ -57,7 +64,9 @@ private:
   QAction * m_p_calendar_action = nullptr;
   QAction * m_p_about_action = nullptr;
 
-  std::unordered_map<std::unique_ptr<reef_moonshiners::ElementBase>, ElementDisplay *> m_elements;
+  reef_moonshiners::ui::SettingsWindow * m_p_settings_window = nullptr;
+
+  std::unordered_map<std::unique_ptr<reef_moonshiners::DailyElement>, ElementDisplay *> m_elements;
 };
 
 }  // namespace reef_moonshiners::ui

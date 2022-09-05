@@ -46,6 +46,7 @@ set(ui_sources
 set(ui_headers
   include/reef_moonshiners/ui/main_window.hpp
   include/reef_moonshiners/ui/element_display.hpp
+  include/reef_moonshiners/ui/settings_window.hpp
 )
 
 foreach(header "${ui_headers}")

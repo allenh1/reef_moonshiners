@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_calendar_action = new QAction(tr("Calendar"), this);
   m_p_about_action = new QAction(tr("About"), this);
 
+  m_p_settings_window = new SettingsWindow(this);
+
   m_p_calendar = new QCalendarWidget(this);
   m_p_central_widget = new QWidget(this);
   m_p_list_widget = new QWidget(m_p_central_widget);
@@ -43,6 +45,19 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_toolbar->addAction(m_p_settings_action);
   m_p_toolbar->addAction(m_p_calendar_action);
   m_p_toolbar->addAction(m_p_about_action);
+
+  m_p_calendar_action->setDisabled(true);
+
+  QObject::connect(
+    m_p_settings_action, &QAction::triggered, this, &MainWindow::_activate_settings_window);
+  QObject::connect(
+    m_p_calendar_action, &QAction::triggered, this, &MainWindow::_activate_calendar_window);
+  QObject::connect(
+    m_p_settings_window->get_refugium_checkbox(), &QCheckBox::stateChanged, this,
+    &MainWindow::_update_refugium_state);
+  QObject::connect(
+    m_p_settings_window->get_tank_size_edit(), &QLineEdit::textChanged, this,
+    &MainWindow::_update_tank_size);
 
   this->addToolBar(m_p_toolbar);
 
@@ -72,6 +87,60 @@ void MainWindow::_populate_list_layout()
   this->_fill_element_list();
   for (auto &[element, display] : m_elements) {
     m_p_list_layout->addWidget(display);
+  }
+}
+
+void MainWindow::_activate_settings_window()
+{
+  /* change view to settings window */
+  m_p_central_widget = this->takeCentralWidget();
+  this->setCentralWidget(m_p_settings_window);
+  /* grey out settings action */
+  m_p_settings_action->setDisabled(true);
+  /* un-grey out the calendar widget */
+  m_p_calendar_action->setEnabled(true);
+}
+
+void MainWindow::_activate_calendar_window()
+{
+  /* change view to settings window */
+  m_p_settings_window = dynamic_cast<SettingsWindow *>(this->takeCentralWidget());
+  this->setCentralWidget(m_p_central_widget);
+  /* grey out calendar action */
+  m_p_calendar_action->setDisabled(true);
+  /* un-grey out the settings widget */
+  m_p_settings_action->setEnabled(true);
+}
+
+void MainWindow::_update_refugium_state(int state)
+{
+  if (Qt::Checked == state) {
+    for (const auto & [element, display] : m_elements) {
+      element->set_multiplier(2.0);  /* this doubles the daily dose */
+      display->update_dosage(element.get());
+    }
+  } else if (Qt::Unchecked == state) {
+    for (const auto & [element, display] : m_elements) {
+      element->set_multiplier(1.0);
+      display->update_dosage(element.get());
+    }
+  }
+}
+
+void MainWindow::_update_tank_size(const QString & text)
+{
+  bool ok = false;
+  const double tank_size_gallons = text.toDouble(&ok);
+  if (!ok) {
+    /* TODO(allenh1): Add error message popup */
+    return;
+  }
+  reef_moonshiners::ElementBase::set_tank_size(
+    reef_moonshiners::gallons_to_liters(tank_size_gallons));
+  /* update dailies */
+  for (const auto & [element, display] : m_elements) {
+    element->set_multiplier(1.0);
+    display->update_dosage(element.get());
   }
 }
 
