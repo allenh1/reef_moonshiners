@@ -11,9 +11,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
 # find dependencies
-find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Network)
+find_package(Qt6 CONFIG QUIET)
+if(NOT Qt6_FOUND)
+  message(status "Could not find Qt6, falling back to Qt5")
+  set(Qt "Qt5")
+  set(qt_wrap_cpp "qt5_wrap_cpp")
+else()
+  set(Qt "Qt6")
+  set(qt_wrap_cpp "qt6_wrap_cpp")
+endif()
+find_package(${Qt} REQUIRED COMPONENTS Widgets Core Gui Network)
 
 add_library(reef_moonshiners
   src/element_base.cpp
@@ -41,7 +49,7 @@ set(ui_headers
 )
 
 foreach(header "${ui_headers}")
-  qt5_wrap_cpp(moc_headers "${header}")
+  qt_wrap_cpp(moc_headers "${header}")
 endforeach()
 
 add_executable(reef_moonshiners_ui
@@ -55,7 +63,7 @@ target_include_directories(reef_moonshiners_ui PUBLIC
 target_compile_features(reef_moonshiners_ui PUBLIC c_std_11 cxx_std_20)  # Require C11 and C++20
 
 target_link_libraries(reef_moonshiners_ui
-  reef_moonshiners Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Network
+  reef_moonshiners ${Qt}::Widgets ${Qt}::Gui ${Qt}::Core ${Qt}::Network
 )
 
 install(
