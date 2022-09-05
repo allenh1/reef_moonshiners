@@ -26,6 +26,8 @@
 
 #include <reef_moonshiners/elements.hpp>
 
+#include <reef_moonshiners/ui/element_display.hpp>
+
 namespace reef_moonshiners::ui
 {
 
@@ -35,7 +37,6 @@ class MainWindow : public QMainWindow
 
 public:
   explicit MainWindow(QWidget * parent = nullptr);
-
   ~MainWindow() override = default;
 
 protected:
@@ -43,19 +44,20 @@ protected:
   void _populate_list_layout();
 
 private:
-  QVBoxLayout m_main_layout;
-  QVBoxLayout m_list_layout;
-  QLabel m_dose_label;
-  QDockWidget m_calendar_widget;
-  QWidget m_central_widget;
-  QCalendarWidget m_calendar;
-  QToolBar m_toolbar;
-  QAction m_import_action;
-  QAction m_settings_action;
-  QAction m_calendar_action;
-  QAction m_about_action;
+  QVBoxLayout * m_p_main_layout = nullptr;
+  QVBoxLayout * m_p_list_layout = nullptr;
+  QLabel * m_p_dose_label = nullptr;
+  QDockWidget * m_p_calendar_widget = nullptr;
+  QWidget * m_p_central_widget = nullptr;
+  QWidget * m_p_list_widget = nullptr;
+  QCalendarWidget * m_p_calendar = nullptr;
+  QToolBar * m_p_toolbar = nullptr;
+  QAction * m_p_import_action = nullptr;
+  QAction * m_p_settings_action = nullptr;
+  QAction * m_p_calendar_action = nullptr;
+  QAction * m_p_about_action = nullptr;
 
-  std::vector<std::unique_ptr<reef_moonshiners::ElementBase>> m_elements;
+  std::unordered_map<std::unique_ptr<reef_moonshiners::ElementBase>, ElementDisplay *> m_elements;
 };
 
 }  // namespace reef_moonshiners::ui

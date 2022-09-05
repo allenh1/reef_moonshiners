@@ -18,58 +18,60 @@ namespace reef_moonshiners::ui
 {
 
 MainWindow::MainWindow(QWidget * parent)
-: QMainWindow(parent),
-  m_dose_label(tr("Dosing Summary")),
-  m_import_action(tr("Import ICP Data")),
-  m_settings_action(tr("Settings")),
-  m_calendar_action(tr("Calendar")),
-  m_about_action(tr("About"))
+: QMainWindow(parent)
 {
   reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(75));
-  this->_populate_list_layout();
 
-  m_main_layout.addWidget(&m_calendar);
-  m_main_layout.addWidget(&m_dose_label);
-  m_main_layout.addLayout(&m_list_layout);
+  m_p_dose_label = new QLabel(tr("Dosing Summary"), this);
+  m_p_import_action = new QAction(tr("Import ICP Data"), this);
+  m_p_settings_action = new QAction(tr("Settings"), this);
+  m_p_calendar_action = new QAction(tr("Calendar"), this);
+  m_p_about_action = new QAction(tr("About"), this);
 
-  m_toolbar.addAction(&m_import_action);
-  m_toolbar.addAction(&m_settings_action);
-  m_toolbar.addAction(&m_calendar_action);
-  m_toolbar.addAction(&m_about_action);
+  m_p_calendar = new QCalendarWidget(this);
+  m_p_central_widget = new QWidget(this);
+  m_p_list_widget = new QWidget(m_p_central_widget);
+  m_p_main_layout = new QVBoxLayout(m_p_central_widget);
+  m_p_main_layout->addWidget(m_p_calendar);
+  m_p_main_layout->addWidget(m_p_dose_label);
 
-  this->addToolBar(&m_toolbar);
+  m_p_list_layout = new QVBoxLayout(m_p_list_widget);
+  m_p_main_layout->addWidget(m_p_list_widget);
 
-  m_central_widget.setLayout(&m_main_layout);
-  this->setCentralWidget(&m_central_widget);
+  m_p_toolbar = new QToolBar(this);
+  m_p_toolbar->addAction(m_p_import_action);
+  m_p_toolbar->addAction(m_p_settings_action);
+  m_p_toolbar->addAction(m_p_calendar_action);
+  m_p_toolbar->addAction(m_p_about_action);
+
+  this->addToolBar(m_p_toolbar);
+
+  this->setCentralWidget(m_p_central_widget);
   this->setWindowTitle(tr("Reef Moonshiners"));
+
+  this->_populate_list_layout();
 }
 
 void MainWindow::_fill_element_list()
 {
   /* for now, these are all just hard-coded */
-  m_elements.emplace_back(std::make_unique<reef_moonshiners::Manganese>());
-  m_elements.emplace_back(std::make_unique<reef_moonshiners::Chromium>());
-  m_elements.emplace_back(std::make_unique<reef_moonshiners::Selenium>());
-  m_elements.emplace_back(std::make_unique<reef_moonshiners::Cobalt>());
-  m_elements.emplace_back(std::make_unique<reef_moonshiners::Iron>());
+  auto manganese = std::make_unique<reef_moonshiners::Manganese>();
+  m_elements.emplace(std::move(manganese), new ElementDisplay(manganese.get(), m_p_list_widget));
+  auto chromium = std::make_unique<reef_moonshiners::Chromium>();
+  m_elements.emplace(std::move(chromium), new ElementDisplay(chromium.get(), m_p_list_widget));
+  auto selenium = std::make_unique<reef_moonshiners::Selenium>();
+  m_elements.emplace(std::move(selenium), new ElementDisplay(selenium.get(), m_p_list_widget));
+  auto cobalt = std::make_unique<reef_moonshiners::Cobalt>();
+  m_elements.emplace(std::move(cobalt), new ElementDisplay(cobalt.get(), m_p_list_widget));
+  auto iron = std::make_unique<reef_moonshiners::Iron>();
+  m_elements.emplace(std::move(iron), new ElementDisplay(iron.get(), m_p_list_widget));
 }
 
 void MainWindow::_populate_list_layout()
 {
-  const std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
-      std::chrono::system_clock::now())};
   this->_fill_element_list();
-  for (const auto & element : m_elements) {
-    element->set_concentration(0.0, now);
-    QHBoxLayout * layout = new QHBoxLayout();
-    QCheckBox * check = new QCheckBox();
-    QSizePolicy current = check->sizePolicy();
-    current.setHorizontalStretch(0);
-    check->setSizePolicy(current);
-    layout->addWidget(check);
-    layout->addWidget(new QLabel(tr(element->get_name().c_str())));
-    layout->addWidget(new QLabel(QString().setNum((double)element->get_dose(now)) + " mL"));
-    m_list_layout.addLayout(layout);
+  for (auto &[element, display] : m_elements) {
+    m_p_list_layout->addWidget(display);
   }
 }
 
