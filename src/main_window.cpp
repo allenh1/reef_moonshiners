@@ -28,7 +28,9 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_calendar_action = new QAction(tr("Calendar"), this);
   m_p_about_action = new QAction(tr("About"), this);
 
+  /* construct windows */
   m_p_settings_window = new SettingsWindow(this);
+  m_p_icp_selection_window = new icp_import_dialog::IcpSelectionWindow(this);
 
   m_p_calendar = new QCalendarWidget(this);
   m_p_central_widget = new QWidget(this);
@@ -48,10 +50,18 @@ MainWindow::MainWindow(QWidget * parent)
 
   m_p_calendar_action->setDisabled(true);
 
+  m_p_active_window = m_p_central_widget;
+  m_p_active_action = m_p_calendar_action;
+
+  /* action mappings */
   QObject::connect(
     m_p_settings_action, &QAction::triggered, this, &MainWindow::_activate_settings_window);
   QObject::connect(
     m_p_calendar_action, &QAction::triggered, this, &MainWindow::_activate_calendar_window);
+  QObject::connect(
+    m_p_import_action, &QAction::triggered, this, &MainWindow::_activate_icp_import_dialog);
+
+  /* connections from settings window */
   QObject::connect(
     m_p_settings_window->get_refugium_checkbox(), &QCheckBox::stateChanged, this,
     &MainWindow::_update_refugium_state);
@@ -93,23 +103,43 @@ void MainWindow::_populate_list_layout()
 void MainWindow::_activate_settings_window()
 {
   /* change view to settings window */
-  m_p_central_widget = this->takeCentralWidget();
+  m_p_active_window = this->takeCentralWidget();
   this->setCentralWidget(m_p_settings_window);
   /* grey out settings action */
   m_p_settings_action->setDisabled(true);
   /* un-grey out the calendar widget */
-  m_p_calendar_action->setEnabled(true);
+  m_p_active_action->setEnabled(true);
+  m_p_active_action = m_p_settings_action;
+  m_p_active_window = m_p_settings_window;
 }
 
 void MainWindow::_activate_calendar_window()
 {
   /* change view to settings window */
-  m_p_settings_window = dynamic_cast<SettingsWindow *>(this->takeCentralWidget());
+  m_p_active_window = this->takeCentralWidget();
   this->setCentralWidget(m_p_central_widget);
   /* grey out calendar action */
   m_p_calendar_action->setDisabled(true);
   /* un-grey out the settings widget */
-  m_p_settings_action->setEnabled(true);
+  m_p_active_action->setEnabled(true);
+  m_p_active_window = m_p_central_widget;
+  m_p_active_action = m_p_calendar_action;
+}
+
+void MainWindow::_activate_icp_import_dialog()
+{
+  /* change view to ICP window */
+  m_p_active_window = this->takeCentralWidget();
+  if (nullptr == m_p_active_icp_selection_window) {
+    m_p_active_icp_selection_window = m_p_icp_selection_window;
+  }
+  this->setCentralWidget(m_p_active_icp_selection_window);
+  /* grey out icp action action */
+  m_p_import_action->setDisabled(true);
+  /* un-grey out the settings widget */
+  m_p_active_action->setEnabled(true);
+  m_p_active_window = m_p_active_icp_selection_window;
+  m_p_active_action = m_p_import_action;
 }
 
 void MainWindow::_update_refugium_state(int state)

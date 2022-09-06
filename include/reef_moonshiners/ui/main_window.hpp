@@ -28,6 +28,7 @@
 
 #include <reef_moonshiners/ui/element_display.hpp>
 #include <reef_moonshiners/ui/settings_window.hpp>
+#include <reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp>
 
 namespace reef_moonshiners::ui
 {
@@ -46,6 +47,7 @@ protected:
 
   Q_SLOT void _activate_settings_window();
   Q_SLOT void _activate_calendar_window();
+  Q_SLOT void _activate_icp_import_dialog();
 
   Q_SLOT void _update_refugium_state(int state);
   Q_SLOT void _update_tank_size(const QString & text);
@@ -64,7 +66,12 @@ private:
   QAction * m_p_calendar_action = nullptr;
   QAction * m_p_about_action = nullptr;
 
-  reef_moonshiners::ui::SettingsWindow * m_p_settings_window = nullptr;
+  SettingsWindow * m_p_settings_window = nullptr;
+  icp_import_dialog::IcpSelectionWindow * m_p_icp_selection_window = nullptr;
+
+  QWidget * m_p_active_window = nullptr;
+  QWidget * m_p_active_icp_selection_window = nullptr;
+  QAction * m_p_active_action = nullptr;
 
   std::unordered_map<std::unique_ptr<reef_moonshiners::DailyElement>, ElementDisplay *> m_elements;
 };

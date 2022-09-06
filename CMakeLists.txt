@@ -41,12 +41,14 @@ target_compile_features(reef_moonshiners PUBLIC c_std_11 cxx_std_20)  # Require 
 set(ui_sources
   src/reef_moonshiners.cpp
   src/main_window.cpp
+  src/icp_import_dialog/icp_selection_window.cpp
 )
 
 set(ui_headers
   include/reef_moonshiners/ui/main_window.hpp
   include/reef_moonshiners/ui/element_display.hpp
   include/reef_moonshiners/ui/settings_window.hpp
+  include/reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp
 )
 
 foreach(header "${ui_headers}")
