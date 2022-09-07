@@ -169,7 +169,6 @@ void MainWindow::_update_tank_size(const QString & text)
     reef_moonshiners::gallons_to_liters(tank_size_gallons));
   /* update dailies */
   for (const auto & [element, display] : m_elements) {
-    element->set_multiplier(1.0);
     display->update_dosage(element.get());
   }
 }
