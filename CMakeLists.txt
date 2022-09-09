@@ -42,6 +42,8 @@ set(ui_sources
   src/reef_moonshiners.cpp
   src/main_window.cpp
   src/icp_import_dialog/icp_selection_window.cpp
+  src/icp_import_dialog/ati_entry_window.cpp
+  src/icp_import_dialog/ati_correction_start_window.cpp
 )
 
 set(ui_headers
@@ -49,6 +51,8 @@ set(ui_headers
   include/reef_moonshiners/ui/element_display.hpp
   include/reef_moonshiners/ui/settings_window.hpp
   include/reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp
+  include/reef_moonshiners/ui/icp_import_dialog/ati_entry_window.hpp
+  include/reef_moonshiners/ui/icp_import_dialog/ati_correction_start_window.hpp
 )
 
 foreach(header "${ui_headers}")

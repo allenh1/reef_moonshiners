@@ -21,7 +21,7 @@ TEST(TestCorrections, test_fluorine)
   std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
       std::chrono::system_clock::now())};
   reef_moonshiners::ElementBase::set_tank_size(283.9);
-  reef_moonshiners::Flourine element;
+  reef_moonshiners::Fluorine element;
   element.set_concentration(1.388E3, now);
   element.set_correction_start_date(now);
   EXPECT_EQ(element.get_correction_start_date(), now);
@@ -44,7 +44,7 @@ TEST(TestCorrections, test_fluorine_2)
   std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
       std::chrono::system_clock::now())};
   reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(17000));
-  reef_moonshiners::Flourine element;
+  reef_moonshiners::Fluorine element;
   element.set_concentration(1.388E3, now);
   element.set_correction_start_date(now);
   EXPECT_EQ(element.get_correction_start_date(), now);

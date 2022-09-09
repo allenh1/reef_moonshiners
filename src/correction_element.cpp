@@ -75,8 +75,9 @@ double CorrectionElement::get_dose(const std::chrono::year_month_day & day) cons
   const double correction_dose_daily =
     truncate_places<2>((total_dose_l / std::ceil(total_dose_l / maximum_dose)) * 1E3);
   // fprintf(stderr, "correction dose / day: '%lf'\n", correction_dose_daily);
-  if (day - m_correction_start_date <
-    std::chrono::days((uint64_t)std::ceil(total_dose_l / maximum_dose)))
+  if (day >= m_correction_start_date &&
+    (day - m_correction_start_date <
+    std::chrono::days((uint64_t)std::ceil(total_dose_l / maximum_dose))))
   {
     return correction_dose_daily;
   }

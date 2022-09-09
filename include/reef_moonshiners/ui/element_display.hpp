@@ -19,6 +19,7 @@
 
 #include <memory>
 
+#include <QDate>
 #include <QLabel>
 #include <QCheckBox>
 #include <QHBoxLayout>
@@ -35,12 +36,16 @@ class ElementDisplay : public QWidget
 public:
   ElementDisplay() = delete;
 
-  explicit ElementDisplay(reef_moonshiners::ElementBase * const element, QWidget * parent = nullptr)
-  : QWidget(parent)
+  explicit ElementDisplay(
+    reef_moonshiners::ElementBase * const element,
+    QVBoxLayout * _parent_layout, QWidget * parent = nullptr)
+  : QWidget(parent),
+    m_p_parent_layout(_parent_layout)
   {
     const std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
         std::chrono::system_clock::now())};
     element->set_concentration(0.0, now);
+    this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     m_p_layout = new QHBoxLayout(this);
     m_p_check_box = new QCheckBox(this);
     m_p_name_label = new QLabel(element->get_name().c_str(), this);
@@ -52,17 +57,27 @@ public:
     m_p_layout->addWidget(m_p_check_box);
     m_p_layout->addWidget(m_p_name_label);
     m_p_layout->addWidget(m_p_dose_amount_label);
+    m_p_parent_layout->addWidget(this);
   }
 
   ~ElementDisplay() override = default;
 
-  void update_dosage(const reef_moonshiners::ElementBase * element)
+  void update_dosage(const reef_moonshiners::ElementBase * element, const QDate & _date)
   {
-    const std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
-        std::chrono::system_clock::now())};
-    m_p_dose_amount_label->setText(QString().setNum((double)element->get_dose(now)) + " mL");
+    int year, month, day;
+    _date.getDate(&year, &month, &day);
+    const std::chrono::year_month_day date{
+      std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
+    const double dose = element->get_dose(date);
+    m_p_dose_amount_label->setText(QString().setNum((double)dose) + " mL");
+    if (0.0 == dose) {
+      this->hide();
+    } else {
+      this->show();
+    }
   }
 
+  QVBoxLayout * m_p_parent_layout = nullptr;
   QHBoxLayout * m_p_layout = nullptr;
   QCheckBox * m_p_check_box = nullptr;
   QLabel * m_p_name_label = nullptr;
