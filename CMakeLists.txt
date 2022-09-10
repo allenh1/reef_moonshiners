@@ -21,13 +21,16 @@ else()
   set(Qt "Qt6")
   set(qt_wrap_cpp "qt6_wrap_cpp")
 endif()
-find_package(${Qt} REQUIRED COMPONENTS Widgets Core Gui Network)
+set(QtComponents Widgets Core Gui Network)
+find_package(${Qt} REQUIRED COMPONENTS ${QtComponents})
 
-add_library(reef_moonshiners
+set(library_sources
   src/element_base.cpp
   src/daily_element.cpp
   src/correction_element.cpp
 )
+
+add_library(reef_moonshiners ${library_sources})
 target_include_directories(reef_moonshiners PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
@@ -54,6 +57,20 @@ set(ui_headers
   include/reef_moonshiners/ui/icp_import_dialog/ati_entry_window.hpp
   include/reef_moonshiners/ui/icp_import_dialog/ati_correction_start_window.hpp
 )
+
+if(${GENERATE_QMAKE})
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_pro_file.cmake)
+  foreach(ls ${library_sources})
+    list(APPEND all_sources "${ls}")
+  endforeach()
+  foreach(us ${ui_sources})
+    list(APPEND all_sources "${us}")
+  endforeach()
+  foreach(uh ${ui_headers})
+    list(APPEND all_headers "${uh}")
+  endforeach()
+  generate_pro_file("${all_sources}" "${all_headers}" "${QtComponents}")
+endif()
 
 foreach(header "${ui_headers}")
   qt_wrap_cpp(moc_headers "${header}")
