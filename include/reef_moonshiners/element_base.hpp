@@ -23,36 +23,36 @@ namespace reef_moonshiners
 {
 
 template<size_t places>
-constexpr double round_places(const double d)
+inline double round_places(const double d)
 {
   return round_places<places - 1>(d * 10) / 10;
 }
 
 template<>
-constexpr double round_places<1>(const double d)
+inline double round_places<1>(const double d)
 {
   return std::ceil(d * 10) / 10;
 }
 
 template<>
-constexpr double round_places<0>(const double d)
+inline double round_places<0>(const double d)
 {
   return std::round(d);
 }
 
 template<size_t places>
-constexpr double truncate_places(const double d)
+inline double truncate_places(const double d)
 {
   return truncate_places<places - 1>(d * 10) / 10;
 }
 
 template<>
-constexpr double truncate_places<1>(const double d)
+inline double truncate_places<1>(const double d)
 {
   return std::floor(d * 10) / 10;
 }
 
-constexpr double gallons_to_liters(const double gallons)
+inline double gallons_to_liters(const double gallons)
 {
   return gallons * 3.78541;
 }
