@@ -1,0 +1,9 @@
+QT +=@COMPONENTS@
+
+CONFIG += qt thread c++20
+
+@SOURCES@
+
+@HEADERS@
+
+INCLUDEPATH = include
