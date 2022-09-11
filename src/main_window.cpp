@@ -106,6 +106,7 @@ MainWindow::MainWindow(QWidget * parent)
 
   this->setCentralWidget(m_p_central_widget);
   this->setWindowTitle(tr("Reef Moonshiners"));
+  this->setWindowIcon(QIcon(":/icon.png"));
 
   this->_fill_element_list();
   this->_populate_list_layout();

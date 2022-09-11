@@ -17,9 +17,11 @@ if(NOT Qt6_FOUND)
   message(status "Could not find Qt6, falling back to Qt5")
   set(Qt "Qt5")
   set(qt_wrap_cpp "qt5_wrap_cpp")
+  set(qt_add_resources "qt5_add_resources")
 else()
   set(Qt "Qt6")
   set(qt_wrap_cpp "qt6_wrap_cpp")
+  set(qt_add_resources "qt6_add_resources")
 endif()
 set(QtComponents Widgets Core Gui Network)
 find_package(${Qt} REQUIRED COMPONENTS ${QtComponents})
@@ -58,6 +60,10 @@ set(ui_headers
   include/reef_moonshiners/ui/icp_import_dialog/ati_correction_start_window.hpp
 )
 
+# add icon
+set(all_resources "resource/images.qrc")
+qt_add_resources(qt_resources ${all_resources})
+
 if(${GENERATE_QMAKE})
   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_pro_file.cmake)
   foreach(ls ${library_sources})
@@ -69,7 +75,7 @@ if(${GENERATE_QMAKE})
   foreach(uh ${ui_headers})
     list(APPEND all_headers "${uh}")
   endforeach()
-  generate_pro_file("${all_sources}" "${all_headers}" "${QtComponents}")
+  generate_pro_file("${all_sources}" "${all_headers}" "${QtComponents}" "${all_resources}")
 endif()
 
 foreach(header "${ui_headers}")
@@ -78,7 +84,9 @@ endforeach()
 
 add_executable(reef_moonshiners_ui
   ${ui_sources}
-  ${moc_headers})
+  ${moc_headers}
+  ${qt_resources}
+)
   
 target_include_directories(reef_moonshiners_ui PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
