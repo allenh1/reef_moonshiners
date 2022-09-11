@@ -170,10 +170,9 @@ void MainWindow::_save()
 {
   fs::path out{
     QStandardPaths::displayName(
-      QStandardPaths::StandardLocation::AppDataLocation).toStdString()};
+      QStandardPaths::AppDataLocation).toStdString()};
   fs::create_directory(out);  /* create if not exists */
   out = out / "reef_moonshiners.dat";
-  // fprintf(stderr, "saving file '%s'\n", std::string(out).c_str());
   std::ofstream file{out, std::ios::binary};
   binary_out(file, reef_moonshiners::ElementBase::get_tank_size());
   binary_out(file, m_refugium_state);
@@ -191,7 +190,7 @@ bool MainWindow::_load()
 {
   fs::path dir{
     QStandardPaths::displayName(
-      QStandardPaths::StandardLocation::AppDataLocation).toStdString()};
+      QStandardPaths::AppDataLocation).toStdString()};
   fs::path in = dir / "reef_moonshiners.dat";
   if (!fs::exists(in)) {
     return false;  /* this will be created after we save */

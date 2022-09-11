@@ -19,24 +19,8 @@
 #include <cmath>
 #include <chrono>
 #include <unordered_map>
-
-namespace std
-{
-
-inline ostream & operator<<(ostream & stream, const chrono::year_month_day & date)
-{
-  return stream << (int)date.year() << (unsigned)date.month() << (unsigned)date.day();
-}
-
-inline istream & operator>>(istream & stream, chrono::year_month_day & date)
-{
-  int day, month, year;
-  stream >> year >> month >> day;
-  date = chrono::year_month_day{chrono::year(year), chrono::month(month), chrono::day(day)};
-  return stream;
-}
-
-}  // namespace std
+#include <ostream>
+#include <istream>
 
 namespace reef_moonshiners
 {
