@@ -24,6 +24,7 @@
 #include <QCalendarWidget>
 #include <QDockWidget>
 #include <QToolBar>
+#include <QStandardPaths>
 
 #include <reef_moonshiners/elements.hpp>
 
@@ -65,7 +66,12 @@ protected:
   Q_SLOT void _handle_okay_ati_correction_start_window(const QDate & date);
   Q_SLOT void _handle_back_ati_correction_start_window();
 
+  Q_SLOT void _save();
+  bool _load();
+
 private:
+  int m_refugium_state = Qt::Unchecked;
+
   QVBoxLayout * m_p_main_layout = nullptr;
   QVBoxLayout * m_p_list_layout = nullptr;
   QLabel * m_p_dose_label = nullptr;

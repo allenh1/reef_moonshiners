@@ -16,6 +16,13 @@
 
 #include <reef_moonshiners/elements.hpp>
 
+#include <fstream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+using namespace std::string_literals;
+
 TEST(TestDailes, test_iron)
 {
   const std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
@@ -62,4 +69,41 @@ TEST(TestDailes, test_selenium)
   reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(300));
   EXPECT_DOUBLE_EQ(element.get_current_concentration_estimate(), 0.0);
   EXPECT_DOUBLE_EQ(element.get_dose(now), 0.23);
+}
+
+TEST(TestDailies, test_ostream)
+{
+  const std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
+      std::chrono::system_clock::now())};
+  reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(100));
+  reef_moonshiners::Selenium selenium_out;
+  selenium_out.set_concentration(0.0, now);
+  reef_moonshiners::Iron iron_out;
+  iron_out.set_concentration(0.0, now);
+  iron_out.set_multiplier(2.0);
+
+  fs::path out = fs::temp_directory_path() / "out";
+  std::ofstream out_file{out, std::ios::binary};
+  out_file << selenium_out << iron_out;
+  out_file.close();
+
+  /* attempt to read */
+  reef_moonshiners::Selenium selenium_in;
+  reef_moonshiners::Iron iron_in;
+  std::ifstream in_file{out, std::ios::binary};
+  in_file >> selenium_in >> iron_in;
+  EXPECT_EQ(selenium_in.get_name(), "Selenium"s);
+  EXPECT_EQ(selenium_in.get_multiplier(), selenium_out.get_multiplier());
+  EXPECT_EQ(selenium_in.get_dose(now), selenium_out.get_dose(now));
+  EXPECT_EQ(selenium_in.get_max_daily_dosage(), selenium_out.get_max_daily_dosage());
+  EXPECT_EQ(selenium_in.get_last_measured_concentration(), selenium_out.get_last_measured_concentration());
+  EXPECT_EQ(selenium_in.get_last_measurement_date(), selenium_out.get_last_measurement_date());
+  EXPECT_EQ(selenium_in.get_target_concentration(), selenium_out.get_target_concentration());
+  EXPECT_EQ(iron_in.get_name(), "Iron"s);
+  EXPECT_EQ(iron_in.get_multiplier(), iron_out.get_multiplier());
+  EXPECT_EQ(iron_in.get_dose(now), iron_out.get_dose(now));
+  EXPECT_EQ(iron_in.get_max_daily_dosage(), iron_out.get_max_daily_dosage());
+  EXPECT_EQ(iron_in.get_last_measured_concentration(), iron_out.get_last_measured_concentration());
+  EXPECT_EQ(iron_in.get_last_measurement_date(), iron_out.get_last_measurement_date());
+  EXPECT_EQ(iron_in.get_target_concentration(), iron_out.get_target_concentration());
 }

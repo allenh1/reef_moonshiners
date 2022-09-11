@@ -14,6 +14,8 @@
 
 #include <reef_moonshiners/ui/main_window.hpp>
 
+#include <fstream>
+#include <filesystem>
 #include <iostream>
 
 #include <QNetworkAccessManager>
@@ -22,6 +24,11 @@
 #include <QXmlStreamReader>
 #include <QJsonDocument>
 #include <QJsonParseError>
+
+namespace
+{
+namespace fs = std::filesystem;
+}  // namespace
 
 namespace reef_moonshiners::ui
 {
@@ -110,6 +117,7 @@ MainWindow::MainWindow(QWidget * parent)
 
   this->_fill_element_list();
   this->_populate_list_layout();
+  this->_load();
   this->_refresh_elements();
 }
 
@@ -158,6 +166,55 @@ void MainWindow::_fill_element_list()
     new ElementDisplay(potassium.get(), m_p_list_layout));
 }
 
+void MainWindow::_save()
+{
+  fs::path out{
+    QStandardPaths::displayName(
+      QStandardPaths::StandardLocation::AppDataLocation).toStdString()};
+  fs::create_directory(out);  /* create if not exists */
+  out = out / "reef_moonshiners.dat";
+  // fprintf(stderr, "saving file '%s'\n", std::string(out).c_str());
+  std::ofstream file{out, std::ios::binary};
+  binary_out(file, reef_moonshiners::ElementBase::get_tank_size());
+  binary_out(file, m_refugium_state);
+  for (const auto & [daily, display] : m_elements) {
+    (void)display;
+    file << *daily;
+  }
+  for (const auto & [correction, display] : m_correction_elements) {
+    (void)display;
+    file << *correction;
+  }
+}
+
+bool MainWindow::_load()
+{
+  fs::path dir{
+    QStandardPaths::displayName(
+      QStandardPaths::StandardLocation::AppDataLocation).toStdString()};
+  fs::path in = dir / "reef_moonshiners.dat";
+  if (!fs::exists(in)) {
+    return false;  /* this will be created after we save */
+  }
+  std::ifstream file{in, std::ios::binary};
+  double tank_size;
+  binary_in(file, tank_size);
+  reef_moonshiners::ElementBase::set_tank_size(tank_size);
+  const double gallons = reef_moonshiners::liters_to_gallons(tank_size);
+  m_p_settings_window->get_tank_size_edit()->setText(QString().setNum(gallons));
+  binary_in(file, m_refugium_state);
+  m_p_settings_window->get_refugium_checkbox()->setCheckState(Qt::CheckState(m_refugium_state));
+  for (auto & [daily, display] : m_elements) {
+    (void)display;
+    file >> *daily;
+  }
+  for (auto & [correction, display] : m_correction_elements) {
+    (void)display;
+    file >> *correction;
+  }
+  return true;
+}
+
 void MainWindow::_refresh_elements()
 {
   for (auto &[element, display] : m_correction_elements) {
@@ -167,6 +224,7 @@ void MainWindow::_refresh_elements()
     display->update_dosage(element.get(), m_p_calendar->selectedDate());
   }
   m_p_list_layout->update();
+  _save();
 }
 
 void MainWindow::_populate_list_layout()
@@ -232,6 +290,7 @@ void MainWindow::_update_refugium_state(int state)
       element->set_multiplier(1.0);
     }
   }
+  m_refugium_state = state;
   this->_refresh_elements();
 }
 

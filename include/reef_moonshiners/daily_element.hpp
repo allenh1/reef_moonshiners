@@ -32,9 +32,19 @@ public:
 
   double get_current_concentration_estimate() const override;
 
+  double get_multiplier() const;
+
   void set_multiplier(const double _multiplier);
 
   void apply_dose(const double, const std::chrono::year_month_day & _date) override;
+
+  void write_to(std::ostream & stream) const override;
+
+  void read_from(std::istream & stream) override;
+
+  friend std::istream & operator>>(std::istream & stream, DailyElement & element);
+
+  friend std::ostream & operator<<(std::ostream & stream, const DailyElement & element);
 
 private:
   double m_multiplier = 1.0;
@@ -45,7 +55,6 @@ private:
     name() : DailyElement( \
         #name, (element_concentration), (target_concentration), \
         (max_adjustment)) {} }
-
 }  // namespace reef_moonshiners
 
 #endif  // REEF_MOONSHINERS__DAILY_ELEMENT_HPP_

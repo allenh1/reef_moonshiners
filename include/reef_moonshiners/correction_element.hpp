@@ -92,6 +92,10 @@ public:
 
   void apply_dose(const double _dose, const std::chrono::year_month_day & _date) override;
 
+  void write_to(std::ostream & stream) const override;
+
+  void read_from(std::istream & stream) override;
+
 private:
   constexpr double _concentration_after_dose(const double dose_l);
 
