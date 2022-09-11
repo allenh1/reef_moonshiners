@@ -2,8 +2,8 @@
 Changelog for package reef_moonshiners
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.0 (2022-09-11)
+------------------
 * Update README
 * Persistent Settings (`#12 <https://github.com/allenh1/reef_moonshiners/issues/12>`_)
   * Add main window icon

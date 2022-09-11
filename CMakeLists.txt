@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(reef_moonshiners)
 
 set(reef_moonshiners_MAJOR_VERSION 0)
-set(reef_moonshiners_MINOR_VERSION 0)
+set(reef_moonshiners_MINOR_VERSION 1)
 set(reef_moonshiners_PATCH_VERSION 0)
 set(reef_moonshiners_VERSION
   ${reef_moonshiners_MAJOR_VERSION}.${reef_moonshiners_MINOR_VERSION}.${reef_moonshiners_PATCH_VERSION})
