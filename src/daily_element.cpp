@@ -50,9 +50,38 @@ void DailyElement::apply_dose(const double, const std::chrono::year_month_day &)
   /* no-op for dailies */
 }
 
+double DailyElement::get_multiplier() const
+{
+  return m_multiplier;
+}
+
 void DailyElement::set_multiplier(const double _multiplier)
 {
   m_multiplier = _multiplier;
+}
+
+void DailyElement::write_to(std::ostream & stream) const
+{
+  this->ElementBase::write_to(stream);
+  binary_out(stream, m_multiplier);
+}
+
+void DailyElement::read_from(std::istream & stream)
+{
+  this->ElementBase::read_from(stream);
+  binary_in(stream, m_multiplier);
+}
+
+std::ostream & operator<<(std::ostream & stream, const DailyElement & element)
+{
+  element.write_to(stream);
+  return stream;
+}
+
+std::istream & operator>>(std::istream & stream, DailyElement & element)
+{
+  element.read_from(stream);
+  return stream;
 }
 
 }  // namespace reef_moonshiners

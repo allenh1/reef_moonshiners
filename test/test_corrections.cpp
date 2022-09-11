@@ -16,6 +16,13 @@
 
 #include <reef_moonshiners/elements.hpp>
 
+#include <fstream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+using namespace std::string_literals;
+
 TEST(TestCorrections, test_fluorine)
 {
   std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
@@ -106,4 +113,38 @@ TEST(TestCorrections, test_molybdenum)
   now = (now + std::chrono::days(1));
   EXPECT_DOUBLE_EQ(element.get_dose(now), 0.0);
   EXPECT_DOUBLE_EQ(element.get_concentration_estimate(now), 15);
+}
+
+TEST(TestDailies, test_ostream)
+{
+  const std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
+      std::chrono::system_clock::now())};
+  reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(100));
+  reef_moonshiners::Molybdenum molybdenum_out;
+  molybdenum_out.set_concentration(0.0, now);
+  reef_moonshiners::Fluorine fluorine_out;
+  fluorine_out.set_concentration(0.0, now);
+
+  fs::path out = fs::temp_directory_path() / "out";
+  std::ofstream out_file{out, std::ios::binary};
+  out_file << molybdenum_out << fluorine_out;
+  out_file.close();
+
+  /* attempt to read */
+  reef_moonshiners::Molybdenum molybdenum_in;
+  reef_moonshiners::Fluorine fluorine_in;
+  std::ifstream in_file{out, std::ios::binary};
+  in_file >> molybdenum_in >> fluorine_in;
+  EXPECT_EQ(molybdenum_in.get_name(), "Molybdenum"s);
+  EXPECT_EQ(molybdenum_in.get_dose(now), molybdenum_out.get_dose(now));
+  EXPECT_EQ(molybdenum_in.get_max_daily_dosage(), molybdenum_out.get_max_daily_dosage());
+  EXPECT_EQ(molybdenum_in.get_last_measured_concentration(), molybdenum_out.get_last_measured_concentration());
+  EXPECT_EQ(molybdenum_in.get_last_measurement_date(), molybdenum_out.get_last_measurement_date());
+  EXPECT_EQ(molybdenum_in.get_target_concentration(), molybdenum_out.get_target_concentration());
+  EXPECT_EQ(fluorine_in.get_name(), "Fluorine"s);
+  EXPECT_EQ(fluorine_in.get_dose(now), fluorine_out.get_dose(now));
+  EXPECT_EQ(fluorine_in.get_max_daily_dosage(), fluorine_out.get_max_daily_dosage());
+  EXPECT_EQ(fluorine_in.get_last_measured_concentration(), fluorine_out.get_last_measured_concentration());
+  EXPECT_EQ(fluorine_in.get_last_measurement_date(), fluorine_out.get_last_measurement_date());
+  EXPECT_EQ(fluorine_in.get_target_concentration(), fluorine_out.get_target_concentration());
 }

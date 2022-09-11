@@ -14,6 +14,8 @@
 
 #include <reef_moonshiners/element_base.hpp>
 
+#include <fstream>
+
 namespace reef_moonshiners
 {
 
@@ -41,7 +43,7 @@ void ElementBase::set_tank_size(const double _tank_size)
   m_tank_size = _tank_size;
 }
 
-double ElementBase::get_tank_size() const
+double ElementBase::get_tank_size()
 {
   return m_tank_size;
 }
@@ -97,6 +99,42 @@ double ElementBase::_max_daily_dosage_l(const double concentration) const
   /* max adjustment is in ug / (L * day) */
   return (m_max_adjustment * m_tank_size) /
          (m_element_concentration - concentration - m_max_adjustment);
+}
+
+void ElementBase::write_to(std::ostream & stream) const
+{
+  binary_out(stream, m_name);
+  binary_out(stream, m_estimated_concentration);
+  binary_out(stream, m_last_measurement);
+  binary_out(stream, m_last_measured_concentration);
+  binary_out(stream, m_element_concentration);
+  binary_out(stream, m_target_concentration);
+  binary_out(stream, m_max_adjustment);
+}
+
+void ElementBase::read_from(std::istream & stream)
+{
+  binary_in(stream, m_name);
+  binary_in(stream, m_estimated_concentration);
+  binary_in(stream, m_last_measurement);
+  binary_in(stream, m_last_measured_concentration);
+  binary_in(stream, m_element_concentration);
+  binary_in(stream, m_target_concentration);
+  binary_in(stream, m_max_adjustment);
+}
+
+/* stream operators */
+
+std::ostream & operator<<(std::ostream & stream, const ElementBase & element)
+{
+  element.write_to(stream);
+  return stream;
+}
+
+std::istream & operator>>(std::istream & stream, ElementBase & element)
+{
+  element.read_from(stream);
+  return stream;
 }
 
 }  // namespace reef_moonshiners

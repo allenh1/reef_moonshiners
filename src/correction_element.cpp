@@ -69,12 +69,10 @@ const std::chrono::year_month_day & CorrectionElement::get_correction_start_date
 double CorrectionElement::get_dose(const std::chrono::year_month_day & day) const
 {
   const double maximum_dose = this->_max_daily_dosage_l(this->get_last_measured_concentration());
-  const double total_dose_l = this->get_tank_size() * (
-    (this->get_target_concentration() - this->get_last_measured_concentration()) /
-    (this->get_element_concentration() - this->get_target_concentration()));
+  const double total_dose_l = (this->get_tank_size() / this->get_element_concentration()) *
+    (this->get_target_concentration() - this->get_last_measured_concentration());
   const double correction_dose_daily =
     truncate_places<2>((total_dose_l / std::ceil(total_dose_l / maximum_dose)) * 1E3);
-  // fprintf(stderr, "correction dose / day: '%lf'\n", correction_dose_daily);
   if (day >= m_correction_start_date &&
     (day - m_correction_start_date <
     std::chrono::days((uint64_t)std::ceil(total_dose_l / maximum_dose))))
@@ -82,6 +80,34 @@ double CorrectionElement::get_dose(const std::chrono::year_month_day & day) cons
     return correction_dose_daily;
   }
   return 0.0;
+}
+
+void CorrectionElement::write_to(std::ostream & stream) const
+{
+  this->ElementBase::write_to(stream);
+  binary_out(stream, m_correction_start_date);
+  binary_out(stream, m_dosed_amounts);
+}
+
+void CorrectionElement::read_from(std::istream & stream)
+{
+  this->ElementBase::read_from(stream);
+  binary_in(stream, m_correction_start_date);
+  binary_in(stream, m_dosed_amounts);
+}
+
+/* stream operators */
+
+std::ostream & operator<<(std::ostream & stream, const CorrectionElement & element)
+{
+  element.write_to(stream);
+  return stream;
+}
+
+std::istream & operator>>(std::istream & stream, CorrectionElement & element)
+{
+  element.read_from(stream);
+  return stream;
 }
 
 }  // namespace reef_moonshiners

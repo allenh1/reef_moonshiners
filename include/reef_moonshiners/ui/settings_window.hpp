@@ -56,12 +56,12 @@ public:
 
   ~SettingsWindow() override = default;
 
-  QLineEdit * get_tank_size_edit() const
+  QLineEdit * get_tank_size_edit()
   {
     return m_p_tank_size_edit;
   }
 
-  QCheckBox * get_refugium_checkbox() const
+  QCheckBox * get_refugium_checkbox()
   {
     return m_p_refugium_checkbox;
   }

@@ -18,6 +18,9 @@
 #include <string>
 #include <cmath>
 #include <chrono>
+#include <unordered_map>
+#include <ostream>
+#include <istream>
 
 namespace reef_moonshiners
 {
@@ -55,6 +58,72 @@ inline double truncate_places<1>(const double d)
 inline double gallons_to_liters(const double gallons)
 {
   return gallons * 3.78541;
+}
+
+inline double liters_to_gallons(const double liters)
+{
+  return liters / 3.78541;
+}
+
+template<typename T>
+inline void binary_out(std::ostream & stream, const T & obj)
+{
+  stream.write(
+    reinterpret_cast<const char *>(&obj),
+    sizeof(obj));
+}
+
+template<>
+inline void binary_out<std::string>(std::ostream & stream, const std::string & obj)
+{
+  const size_t len = obj.size();
+  stream.write(reinterpret_cast<const char *>(&len), sizeof(len));
+  stream.write(obj.c_str(), len);
+}
+
+template<typename K, typename V>
+inline void binary_out(std::ostream & stream, const std::unordered_map<K, V> & obj)
+{
+  const size_t len = obj.size();
+  stream.write(reinterpret_cast<const char *>(&len), sizeof(len));
+  for (const auto&[key, value] : obj) {
+    binary_out(stream, key);
+    binary_out(stream, value);
+  }
+}
+
+template<typename T>
+inline void binary_in(std::istream & stream, T & obj)
+{
+  stream.read(
+    reinterpret_cast<char *>(&obj),
+    sizeof(obj));
+}
+
+template<>
+inline void binary_in<std::string>(std::istream & stream, std::string & obj)
+{
+  size_t len;
+  stream.read(reinterpret_cast<char *>(&len), sizeof(len));
+  char * str_in = reinterpret_cast<char *>(calloc(len + 1, sizeof(*str_in)));
+  stream.read(str_in, len);
+  obj = std::string(str_in);
+  free(str_in);
+}
+
+template<typename K, typename V>
+inline void binary_in(std::istream & stream, std::unordered_map<K, V> & obj)
+{
+  size_t len;
+  binary_in(stream, len);
+
+  K key;
+  V value;
+  for (; len-- > 0; ) {
+    binary_in(stream, key);
+    binary_in(stream, value);
+    obj[key] = value;
+  }
 }
 
 class ElementBase
@@ -118,7 +187,7 @@ public:
    */
   void set_concentration(const double _concentration, const std::chrono::year_month_day & _date);
 
-  double get_tank_size() const;
+  static double get_tank_size();
 
   double get_max_daily_dosage() const;
 
@@ -131,6 +200,18 @@ public:
   double get_element_concentration() const;
 
   static void set_tank_size(const double _tank_size);
+
+  /** 
+   * Allow serialization for storage
+   * @param stream Where to serialize
+   */
+  virtual void write_to(std::ostream & stream) const;
+
+  virtual void read_from(std::istream & stream);
+
+  friend std::istream & operator>>(std::istream & stream, ElementBase & element);
+
+  friend std::ostream & operator<<(std::ostream & stream, const ElementBase & element);
 
 protected:
   double _get_concentration_after_dose(
@@ -155,11 +236,11 @@ private:
   /// tank size (liters)
   inline static double m_tank_size = 0.0;
   /// element concentration in micrograms per liter
-  const double m_element_concentration;
+  double m_element_concentration;
   /// target concentration in micrograms per liter
-  const double m_target_concentration;
+  double m_target_concentration;
   /// maximum adjustment for this element (micrograms per liter per day)
-  const double m_max_adjustment;
+  double m_max_adjustment;
 };
 
 }  // namespace reef_moonshiners
