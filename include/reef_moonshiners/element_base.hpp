@@ -86,7 +86,7 @@ inline void binary_out(std::ostream & stream, const std::unordered_map<K, V> & o
 {
   const size_t len = obj.size();
   stream.write(reinterpret_cast<const char *>(&len), sizeof(len));
-  for (const auto&[key, value] : obj) {
+  for (const auto &[key, value] : obj) {
     binary_out(stream, key);
     binary_out(stream, value);
   }
@@ -125,6 +125,12 @@ inline void binary_in(std::istream & stream, std::unordered_map<K, V> & obj)
     obj[key] = value;
   }
 }
+
+enum class DosingUnit : uint8_t
+{
+  ML = 0,
+  DROPS = 1
+};
 
 class ElementBase
 {
@@ -187,6 +193,12 @@ public:
    */
   void set_concentration(const double _concentration, const std::chrono::year_month_day & _date);
 
+  DosingUnit get_dosing_unit() const;
+
+  std::string get_dosing_unit_str() const;
+
+  void set_dosing_unit(const DosingUnit _dosing_unit);
+
   static double get_tank_size();
 
   double get_max_daily_dosage() const;
@@ -201,7 +213,7 @@ public:
 
   static void set_tank_size(const double _tank_size);
 
-  /** 
+  /**
    * Allow serialization for storage
    * @param stream Where to serialize
    */
@@ -212,6 +224,8 @@ public:
   friend std::istream & operator>>(std::istream & stream, ElementBase & element);
 
   friend std::ostream & operator<<(std::ostream & stream, const ElementBase & element);
+
+  inline static size_t m_load_version = 1;
 
 protected:
   double _get_concentration_after_dose(
@@ -241,6 +255,8 @@ private:
   double m_target_concentration;
   /// maximum adjustment for this element (micrograms per liter per day)
   double m_max_adjustment;
+  /// dosing unit for this element
+  DosingUnit m_dosing_unit = DosingUnit::ML;
 };
 
 }  // namespace reef_moonshiners

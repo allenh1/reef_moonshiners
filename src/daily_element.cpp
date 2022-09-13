@@ -72,16 +72,4 @@ void DailyElement::read_from(std::istream & stream)
   binary_in(stream, m_multiplier);
 }
 
-std::ostream & operator<<(std::ostream & stream, const DailyElement & element)
-{
-  element.write_to(stream);
-  return stream;
-}
-
-std::istream & operator>>(std::istream & stream, DailyElement & element)
-{
-  element.read_from(stream);
-  return stream;
-}
-
 }  // namespace reef_moonshiners
