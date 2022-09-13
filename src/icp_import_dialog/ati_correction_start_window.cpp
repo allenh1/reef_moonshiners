@@ -22,9 +22,11 @@ ATICorrectionStartWindow::ATICorrectionStartWindow(QWidget * parent)
 {
   m_p_correction_label = new QLabel(tr("Select Corrections Start Date:"));
   m_p_iodine_label = new QLabel();
+  m_p_vanadium_label = new QLabel();
   m_p_okay_button = new QPushButton(tr("&Okay"));
   m_p_back_button = new QPushButton(tr("&Back"));
   m_p_iodine_checkbox = new QCheckBox();
+  m_p_vanadium_checkbox = new QCheckBox();
 
   m_p_button_layout = new QHBoxLayout();
   m_p_button_layout->addWidget(m_p_back_button);
@@ -33,6 +35,10 @@ ATICorrectionStartWindow::ATICorrectionStartWindow(QWidget * parent)
   m_p_iodine_layout = new QHBoxLayout();
   m_p_iodine_layout->addWidget(m_p_iodine_label);
   m_p_iodine_layout->addWidget(m_p_iodine_checkbox);
+
+  m_p_vanadium_layout = new QHBoxLayout();
+  m_p_vanadium_layout->addWidget(m_p_vanadium_label);
+  m_p_vanadium_layout->addWidget(m_p_vanadium_checkbox);
 
   m_p_calendar_widget = new QCalendarWidget();
 
@@ -49,6 +55,13 @@ ATICorrectionStartWindow::ATICorrectionStartWindow(QWidget * parent)
           Q_EMIT (increase_iodine());
         } else if (m_iodine_high) {
           Q_EMIT (decrease_iodine());
+        }
+      }
+      if (m_p_vanadium_checkbox->checkState() == Qt::Checked) {
+        if (m_vanadium_low) {
+          Q_EMIT (increase_vanadium());
+        } else if (m_vanadium_high) {
+          Q_EMIT (decrease_vanadium());
         }
       }
       Q_EMIT (okay_button_pressed(m_p_calendar_widget->selectedDate()));
@@ -69,12 +82,30 @@ void ATICorrectionStartWindow::set_iodine_increase(const bool increase)
   }
 }
 
+void ATICorrectionStartWindow::set_vanadium_increase(const bool increase)
+{
+  m_vanadium_low = increase;
+  if (m_vanadium_low) {
+    m_p_vanadium_label->setText(tr("Vanadium is too low. Increase?"));
+    m_p_main_layout->insertLayout(0, m_p_vanadium_layout);
+  }
+}
+
 void ATICorrectionStartWindow::set_iodine_decrease(const bool decrease)
 {
   m_iodine_high = decrease;
   if (m_iodine_high) {
     m_p_iodine_label->setText(tr("Iodine is too high. Decrease?"));
     m_p_main_layout->insertLayout(0, m_p_iodine_layout);
+  }
+}
+
+void ATICorrectionStartWindow::set_vanadium_decrease(const bool decrease)
+{
+  m_vanadium_high = decrease;
+  if (m_vanadium_high) {
+    m_p_vanadium_label->setText(tr("Vanadium is too high. Decrease?"));
+    m_p_main_layout->insertLayout(0, m_p_vanadium_layout);
   }
 }
 

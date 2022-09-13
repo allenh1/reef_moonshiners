@@ -17,8 +17,7 @@
 
 #include <reef_moonshiners/daily_element.hpp>
 #include <reef_moonshiners/correction_element.hpp>
-
-#include <reef_moonshiners/iodine_element.hpp>
+#include <reef_moonshiners/dropper_element.hpp>
 
 namespace reef_moonshiners
 {
@@ -38,8 +37,11 @@ DAILY_ELEMENT(Chromium, 100E3, 0.02, 0.1);
 DAILY_ELEMENT(Selenium, 100E3, 0.02, 0.1);
 DAILY_ELEMENT(Cobalt, 101E3, 0.02, 0.1);
 DAILY_ELEMENT(Iron, 108E3, 0.01, 0.1);
-
 // DAILY_ELEMENT(Rubidium, 1000E3, 0.0011E3, 0.1E3);
+
+DROPPER_ELEMENT(Iodine, 75.0, 95.0);
+DROPPER_ELEMENT(Vanadium, 1.0, 2.0);
+
 
 }  // namespace reef_moonshiners
 

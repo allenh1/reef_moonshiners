@@ -30,7 +30,7 @@ set(library_sources
   src/element_base.cpp
   src/daily_element.cpp
   src/correction_element.cpp
-  src/iodine_element.cpp
+  src/dropper_element.cpp
 )
 
 add_library(reef_moonshiners ${library_sources})

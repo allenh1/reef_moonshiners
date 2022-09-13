@@ -12,49 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <reef_moonshiners/iodine_element.hpp>
+#include <reef_moonshiners/dropper_element.hpp>
 
 namespace reef_moonshiners
 {
 
-Iodine::Iodine()
-: DailyElement("Iodine", 0.0, 75.0, 0.0)
+DropperElement::DropperElement(
+  const std::string & _name,
+  const double _low_concentration,
+  const double _high_concentration)
+: DailyElement(_name, 0.0, _low_concentration, 0.0),
+  m_high_concentration(_high_concentration)
 {
   this->set_dosing_unit(DosingUnit::DROPS);
 }
 
-void Iodine::set_multiplier(const double)
+void DropperElement::set_multiplier(const double)
 {
   DailyElement::set_multiplier(1.0);
 }
 
-void Iodine::set_drops(const size_t _drops)
+void DropperElement::set_drops(const size_t _drops)
 {
   m_drops = _drops;
 }
 
-double Iodine::get_dose(const std::chrono::year_month_day &) const
+double DropperElement::get_dose(const std::chrono::year_month_day &) const
 {
   return static_cast<double>(m_drops);
 }
 
-bool Iodine::is_low() const
+bool DropperElement::is_low() const
 {
   return this->get_current_concentration_estimate() < this->get_target_concentration();
 }
 
-bool Iodine::is_high() const
+bool DropperElement::is_high() const
 {
-  return this->get_current_concentration_estimate() > m_max_concentration;
+  return this->get_current_concentration_estimate() > m_high_concentration;
 }
 
-void Iodine::write_to(std::ostream & stream) const
+void DropperElement::write_to(std::ostream & stream) const
 {
   this->ElementBase::write_to(stream);
   binary_out(stream, m_drops);
 }
 
-void Iodine::read_from(std::istream & stream)
+void DropperElement::read_from(std::istream & stream)
 {
   this->ElementBase::read_from(stream);
   binary_in(stream, m_drops);

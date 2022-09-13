@@ -23,6 +23,7 @@
 #include <QDate>
 #include <QCalendarWidget>
 #include <QDockWidget>
+#include <QScrollArea>
 #include <QToolBar>
 #include <QStandardPaths>
 
@@ -60,6 +61,7 @@ protected:
   Q_SLOT void _update_refugium_state(int state);
   Q_SLOT void _update_tank_size(const QString & text);
   Q_SLOT void _update_iodine_drops(int drops);
+  Q_SLOT void _update_vanadium_drops(int drops);
 
   Q_SLOT void _handle_next_icp_selection_window(IcpSelection icp_selection);
   Q_SLOT void _handle_back_ati_entry_window();
@@ -68,6 +70,8 @@ protected:
   Q_SLOT void _handle_back_ati_correction_start_window();
   Q_SLOT void _handle_increase_iodine();
   Q_SLOT void _handle_decrease_iodine();
+  Q_SLOT void _handle_increase_vanadium();
+  Q_SLOT void _handle_decrease_vanadium();
 
   Q_SLOT void _save();
   bool _load();
@@ -99,9 +103,12 @@ private:
   QAction * m_p_active_action = nullptr;
 
   std::unordered_map<std::unique_ptr<reef_moonshiners::DailyElement>, ElementDisplay *> m_elements;
+  std::unordered_map<std::unique_ptr<reef_moonshiners::DropperElement>,
+    ElementDisplay *> m_dropper_elements;
+  reef_moonshiners::Iodine * m_p_iodine_element = nullptr;
+  reef_moonshiners::Vanadium * m_p_vanadium_element = nullptr;
   std::unordered_map<std::unique_ptr<reef_moonshiners::CorrectionElement>,
     ElementDisplay *> m_correction_elements;
-  reef_moonshiners::Iodine * m_p_iodine_element = nullptr;
 };
 
 }  // namespace reef_moonshiners::ui

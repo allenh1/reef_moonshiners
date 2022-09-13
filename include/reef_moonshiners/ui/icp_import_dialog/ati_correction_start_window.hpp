@@ -41,22 +41,33 @@ public:
   Q_SIGNAL void increase_iodine();
   Q_SIGNAL void decrease_iodine();
 
+  Q_SIGNAL void increase_vanadium();
+  Q_SIGNAL void decrease_vanadium();
+
   void set_iodine_increase(const bool increase);
   void set_iodine_decrease(const bool decrease);
+
+  void set_vanadium_increase(const bool increase);
+  void set_vanadium_decrease(const bool decrease);
 
 private:
   QVBoxLayout * m_p_main_layout = nullptr;
   QHBoxLayout * m_p_button_layout = nullptr;
   QHBoxLayout * m_p_iodine_layout = nullptr;
+  QHBoxLayout * m_p_vanadium_layout = nullptr;
   QLabel * m_p_correction_label = nullptr;
   QCalendarWidget * m_p_calendar_widget = nullptr;
   QPushButton * m_p_okay_button = nullptr;
   QPushButton * m_p_back_button = nullptr;
   QLabel * m_p_iodine_label = nullptr;
   QCheckBox * m_p_iodine_checkbox = nullptr;
+  QLabel * m_p_vanadium_label = nullptr;
+  QCheckBox * m_p_vanadium_checkbox = nullptr;
 
   bool m_iodine_low = false;
   bool m_iodine_high = false;
+  bool m_vanadium_low = false;
+  bool m_vanadium_high = false;
 };
 
 }  // namespace reef_moonshiners::ui::icp_import_dialog

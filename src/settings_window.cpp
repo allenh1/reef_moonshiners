@@ -24,10 +24,13 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_tank_size_label = new QLabel(tr("Tank Size (gallons):"), this);
   m_p_refugium_label = new QLabel(tr("Refugium:"), this);
   m_p_iodine_label = new QLabel(tr("Iodide drops (2-3 per 100 gallons):"));
+  m_p_vanadium_label = new QLabel(tr("Vanadium drops (1-2 per 100 gallons):"));
   m_p_refugium_checkbox = new QCheckBox(this);
   m_p_iodine_drop_edit = new QSpinBox();
+  m_p_vanadium_drop_edit = new QSpinBox();
 
   m_p_iodine_drop_edit->setValue(2);
+  m_p_vanadium_drop_edit->setValue(1);
 
   m_p_tank_size_layout = new QHBoxLayout();
   m_p_tank_size_layout->addWidget(m_p_tank_size_label);
@@ -37,6 +40,10 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_iodine_layout->addWidget(m_p_iodine_label);
   m_p_iodine_layout->addWidget(m_p_iodine_drop_edit);
 
+  m_p_vanadium_layout = new QHBoxLayout();
+  m_p_vanadium_layout->addWidget(m_p_vanadium_label);
+  m_p_vanadium_layout->addWidget(m_p_vanadium_drop_edit);
+
   m_p_refugium_layout = new QHBoxLayout();
   m_p_refugium_layout->addWidget(m_p_refugium_label);
   m_p_refugium_layout->addWidget(m_p_refugium_checkbox);
@@ -44,6 +51,7 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_main_layout = new QVBoxLayout();
   m_p_main_layout->addLayout(m_p_tank_size_layout);
   m_p_main_layout->addLayout(m_p_iodine_layout);
+  m_p_main_layout->addLayout(m_p_vanadium_layout);
   m_p_main_layout->addLayout(m_p_refugium_layout);
 
   this->setLayout(m_p_main_layout);
@@ -62,5 +70,10 @@ QCheckBox * SettingsWindow::get_refugium_checkbox()
 QSpinBox * SettingsWindow::get_iodine_spinbox()
 {
   return m_p_iodine_drop_edit;
+}
+
+QSpinBox * SettingsWindow::get_vanadium_spinbox()
+{
+  return m_p_vanadium_drop_edit;
 }
 }  // namespace reef_moonshiners::ui

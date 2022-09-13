@@ -12,19 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef REEF_MOONSHINERS__IODINE_ELEMENT_HPP_
-#define REEF_MOONSHINERS__IODINE_ELEMENT_HPP_
+#ifndef REEF_MOONSHINERS__DROPPER_ELEMENT_HPP_
+#define REEF_MOONSHINERS__DROPPER_ELEMENT_HPP_
 
 #include <reef_moonshiners/daily_element.hpp>
 
 namespace reef_moonshiners
 {
 
-class Iodine final : public reef_moonshiners::DailyElement
+class DropperElement : public reef_moonshiners::DailyElement
 {
 public:
-  Iodine();
-  ~Iodine() final = default;
+  explicit DropperElement(
+    const std::string & _name,
+    const double _low_concentration,
+    const double _high_concentration);
+
+  ~DropperElement() override = default;
 
   void write_to(std::ostream & stream) const final;
 
@@ -42,11 +46,19 @@ public:
 
 private:
   /// number of drops to dose
-  size_t m_drops = 2;
-  /// maximum concentration, micrograms per liter
-  const double m_max_concentration = 95.0;
+  size_t m_drops;
+  /// upper bound for concentration in micrograms per liter
+  const double m_high_concentration;
 };
 
 }  // namespace reef_moonshiners
 
-#endif  // REEF_MOONSHINERS__IODINE_ELEMENT_HPP_
+#define DROPPER_ELEMENT(name, min_concentration, max_concentration) \
+  struct name final : public DropperElement { \
+    name() : DropperElement( \
+        #name, (min_concentration), \
+        (max_concentration)) {} \
+    ~name() final = default; \
+  }
+
+#endif  // REEF_MOONSHINERS__DROPPER_ELEMENT_HPP_

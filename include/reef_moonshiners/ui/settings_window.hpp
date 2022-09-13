@@ -39,17 +39,21 @@ public:
   QCheckBox * get_refugium_checkbox();
 
   QSpinBox * get_iodine_spinbox();
+  QSpinBox * get_vanadium_spinbox();
 
 private:
   QVBoxLayout * m_p_main_layout = nullptr;
   QHBoxLayout * m_p_refugium_layout = nullptr;
   QHBoxLayout * m_p_tank_size_layout = nullptr;
   QHBoxLayout * m_p_iodine_layout = nullptr;
+  QHBoxLayout * m_p_vanadium_layout = nullptr;
   QLineEdit * m_p_tank_size_edit = nullptr;
   QSpinBox * m_p_iodine_drop_edit = nullptr;
+  QSpinBox * m_p_vanadium_drop_edit = nullptr;
   QLabel * m_p_tank_size_label = nullptr;
   QLabel * m_p_refugium_label = nullptr;
   QLabel * m_p_iodine_label = nullptr;
+  QLabel * m_p_vanadium_label = nullptr;
   QCheckBox * m_p_refugium_checkbox = nullptr;
 };
 
