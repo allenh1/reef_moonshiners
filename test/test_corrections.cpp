@@ -105,7 +105,7 @@ TEST(TestCorrections, test_molybdenum)
   element.set_correction_start_date(now);
   EXPECT_EQ(element.get_correction_start_date(), now);
   EXPECT_DOUBLE_EQ(element.get_concentration_estimate(now), 12);
-  EXPECT_DOUBLE_EQ(element.get_dose(now), 34.07);
+  EXPECT_NEAR(element.get_dose(now), 34.07, 0.01);
   element.apply_dose(element.get_dose(now), now);
   /* move forward another day */
   now = (now + std::chrono::days(1));
@@ -113,6 +113,44 @@ TEST(TestCorrections, test_molybdenum)
   now = (now + std::chrono::days(1));
   EXPECT_DOUBLE_EQ(element.get_dose(now), 0.0);
   EXPECT_DOUBLE_EQ(element.get_concentration_estimate(now), 15);
+}
+
+TEST(TestCorrections, test_barium)
+{
+  std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
+      std::chrono::system_clock::now())};
+  reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(300));
+  reef_moonshiners::Barium element;
+  element.set_concentration(8.1, now);
+  element.set_correction_start_date(now);
+  EXPECT_EQ(element.get_correction_start_date(), now);
+  EXPECT_NEAR(element.get_dose(now), 78.36, 0.02);
+  element.apply_dose(element.get_dose(now), now);
+  /* move forward another day */
+  now = (now + std::chrono::days(1));
+  EXPECT_DOUBLE_EQ(element.get_dose(now), 0.0);
+  EXPECT_DOUBLE_EQ(element.get_concentration_estimate(now), 15);
+}
+
+TEST(TestCorrections, test_barium_sponge)
+{
+  std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
+      std::chrono::system_clock::now())};
+  reef_moonshiners::ElementBase::set_tank_size(reef_moonshiners::gallons_to_liters(300));
+  reef_moonshiners::Barium element;
+  element.set_concentration(7.9, now);
+  element.set_correction_start_date(now);
+  EXPECT_EQ(element.get_correction_start_date(), now);
+  EXPECT_NEAR(element.get_dose(now), 83.66, 0.01);
+  element.apply_dose(element.get_dose(now), now);
+  /* move forward another day */
+  now = (now + std::chrono::days(1));
+  element.apply_dose(element.get_dose(now), now);
+  now = (now + std::chrono::days(1));
+  element.apply_dose(element.get_dose(now), now);
+  now = (now + std::chrono::days(1));
+  EXPECT_DOUBLE_EQ(element.get_dose(now), 0.0);
+  EXPECT_DOUBLE_EQ(element.get_concentration_estimate(now), 30);
 }
 
 TEST(TestDailies, test_ostream)

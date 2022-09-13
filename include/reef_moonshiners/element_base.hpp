@@ -207,7 +207,7 @@ public:
 
   const std::chrono::year_month_day & get_last_measurement_date() const;
 
-  double get_target_concentration() const;
+  virtual double get_target_concentration() const;
 
   double get_element_concentration() const;
 
