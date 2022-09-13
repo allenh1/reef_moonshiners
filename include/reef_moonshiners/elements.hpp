@@ -18,6 +18,8 @@
 #include <reef_moonshiners/daily_element.hpp>
 #include <reef_moonshiners/correction_element.hpp>
 
+#include <reef_moonshiners/iodine_element.hpp>
+
 namespace reef_moonshiners
 {
 

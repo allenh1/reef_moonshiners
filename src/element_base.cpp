@@ -16,6 +16,8 @@
 
 #include <fstream>
 
+using namespace std::string_literals;
+
 namespace reef_moonshiners
 {
 
@@ -68,6 +70,26 @@ double ElementBase::get_element_concentration() const
   return m_element_concentration;
 }
 
+void ElementBase::set_dosing_unit(DosingUnit _dosing_unit)
+{
+  m_dosing_unit = _dosing_unit;
+}
+
+DosingUnit ElementBase::get_dosing_unit() const
+{
+  return m_dosing_unit;
+}
+
+std::string ElementBase::get_dosing_unit_str() const
+{
+  switch (m_dosing_unit) {
+    case DosingUnit::ML:
+      return "mL"s;
+    case DosingUnit::DROPS:
+      return "drops"s;
+  }
+}
+
 const std::chrono::year_month_day & ElementBase::get_last_measurement_date() const
 {
   return m_last_measurement;
@@ -110,6 +132,7 @@ void ElementBase::write_to(std::ostream & stream) const
   binary_out(stream, m_element_concentration);
   binary_out(stream, m_target_concentration);
   binary_out(stream, m_max_adjustment);
+  binary_out(stream, m_dosing_unit);
 }
 
 void ElementBase::read_from(std::istream & stream)
@@ -121,6 +144,9 @@ void ElementBase::read_from(std::istream & stream)
   binary_in(stream, m_element_concentration);
   binary_in(stream, m_target_concentration);
   binary_in(stream, m_max_adjustment);
+  if (m_load_version >= 1) {
+    binary_in(stream, m_dosing_unit);
+  }
 }
 
 /* stream operators */

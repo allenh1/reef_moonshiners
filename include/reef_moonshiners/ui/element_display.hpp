@@ -51,8 +51,8 @@ public:
     m_p_name_label = new QLabel(element->get_name().c_str(), this);
     m_p_dose_amount_label = new QLabel(
       QString().setNum(
-        (double)element->get_dose(
-          now)) + " mL", this);
+        (double)element->get_dose(now)) +
+      tr(" ") + tr(element->get_dosing_unit_str().c_str()), this);
 
     m_p_layout->addWidget(m_p_check_box);
     m_p_layout->addWidget(m_p_name_label);
@@ -70,7 +70,9 @@ public:
       std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
     const double dose = element->get_dose(date);
     m_p_name_label->setText(tr(element->get_name().c_str()));
-    m_p_dose_amount_label->setText(QString().setNum((double)dose) + " mL");
+    m_p_dose_amount_label->setText(
+      QString().setNum((double)dose) + tr(" ") +
+      tr(element->get_dosing_unit_str().c_str()));
     if (0.0 == dose) {
       this->hide();
     } else {

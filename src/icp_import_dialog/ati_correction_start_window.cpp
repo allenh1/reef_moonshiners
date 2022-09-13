@@ -21,12 +21,18 @@ ATICorrectionStartWindow::ATICorrectionStartWindow(QWidget * parent)
 : QWidget(parent)
 {
   m_p_correction_label = new QLabel(tr("Select Corrections Start Date:"));
+  m_p_iodine_label = new QLabel();
   m_p_okay_button = new QPushButton(tr("&Okay"));
   m_p_back_button = new QPushButton(tr("&Back"));
+  m_p_iodine_checkbox = new QCheckBox();
 
   m_p_button_layout = new QHBoxLayout();
   m_p_button_layout->addWidget(m_p_back_button);
   m_p_button_layout->addWidget(m_p_okay_button);
+
+  m_p_iodine_layout = new QHBoxLayout();
+  m_p_iodine_layout->addWidget(m_p_iodine_label);
+  m_p_iodine_layout->addWidget(m_p_iodine_checkbox);
 
   m_p_calendar_widget = new QCalendarWidget();
 
@@ -38,6 +44,13 @@ ATICorrectionStartWindow::ATICorrectionStartWindow(QWidget * parent)
   QObject::connect(
     m_p_okay_button, &QPushButton::clicked,
     [this]() {
+      if (m_p_iodine_checkbox->checkState() == Qt::Checked) {
+        if (m_iodine_low) {
+          Q_EMIT (increase_iodine());
+        } else if (m_iodine_high) {
+          Q_EMIT (decrease_iodine());
+        }
+      }
       Q_EMIT (okay_button_pressed(m_p_calendar_widget->selectedDate()));
     });
 }
@@ -45,6 +58,24 @@ ATICorrectionStartWindow::ATICorrectionStartWindow(QWidget * parent)
 QPushButton * ATICorrectionStartWindow::get_back_button() const
 {
   return m_p_back_button;
+}
+
+void ATICorrectionStartWindow::set_iodine_increase(const bool increase)
+{
+  m_iodine_low = increase;
+  if (m_iodine_low) {
+    m_p_iodine_label->setText(tr("Iodine is too low. Increase?"));
+    m_p_main_layout->insertLayout(0, m_p_iodine_layout);
+  }
+}
+
+void ATICorrectionStartWindow::set_iodine_decrease(const bool decrease)
+{
+  m_iodine_high = decrease;
+  if (m_iodine_high) {
+    m_p_iodine_label->setText(tr("Iodine is too high. Decrease?"));
+    m_p_main_layout->insertLayout(0, m_p_iodine_layout);
+  }
 }
 
 }  // namespace reef_moonshiners::ui::icp_import_dialog

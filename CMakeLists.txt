@@ -30,6 +30,7 @@ set(library_sources
   src/element_base.cpp
   src/daily_element.cpp
   src/correction_element.cpp
+  src/iodine_element.cpp
 )
 
 add_library(reef_moonshiners ${library_sources})
@@ -45,10 +46,11 @@ target_compile_features(reef_moonshiners PUBLIC c_std_11 cxx_std_20)  # Require 
 
 set(ui_sources
   src/reef_moonshiners.cpp
+  src/settings_window.cpp
   src/main_window.cpp
-  src/icp_import_dialog/icp_selection_window.cpp
-  src/icp_import_dialog/ati_entry_window.cpp
   src/icp_import_dialog/ati_correction_start_window.cpp
+  src/icp_import_dialog/ati_entry_window.cpp
+  src/icp_import_dialog/icp_selection_window.cpp
 )
 
 set(ui_headers

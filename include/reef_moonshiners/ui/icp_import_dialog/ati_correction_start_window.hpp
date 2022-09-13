@@ -16,7 +16,7 @@
 #define REEF_MOONSHINERS__UI__ICP_IMPORT_DIALOG__ATI_CORRECTION_START_WINDOW_HPP_
 
 #include <QCalendarWidget>
-#include <QComboBox>
+#include <QCheckBox>
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QLineEdit>
@@ -38,13 +38,25 @@ public:
 
   Q_SIGNAL void okay_button_pressed(const QDate &);
 
+  Q_SIGNAL void increase_iodine();
+  Q_SIGNAL void decrease_iodine();
+
+  void set_iodine_increase(const bool increase);
+  void set_iodine_decrease(const bool decrease);
+
 private:
   QVBoxLayout * m_p_main_layout = nullptr;
   QHBoxLayout * m_p_button_layout = nullptr;
+  QHBoxLayout * m_p_iodine_layout = nullptr;
   QLabel * m_p_correction_label = nullptr;
   QCalendarWidget * m_p_calendar_widget = nullptr;
   QPushButton * m_p_okay_button = nullptr;
   QPushButton * m_p_back_button = nullptr;
+  QLabel * m_p_iodine_label = nullptr;
+  QCheckBox * m_p_iodine_checkbox = nullptr;
+
+  bool m_iodine_low = false;
+  bool m_iodine_high = false;
 };
 
 }  // namespace reef_moonshiners::ui::icp_import_dialog

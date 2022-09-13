@@ -90,6 +90,9 @@ MainWindow::MainWindow(QWidget * parent)
   QObject::connect(
     m_p_settings_window->get_tank_size_edit(), &QLineEdit::textChanged, this,
     &MainWindow::_update_tank_size);
+  QObject::connect(
+    m_p_settings_window->get_iodine_spinbox(), &QSpinBox::valueChanged,
+    this, &MainWindow::_update_iodine_drops);
 
   /* connections from ICP Dialog */
   QObject::connect(
@@ -108,6 +111,12 @@ MainWindow::MainWindow(QWidget * parent)
   QObject::connect(
     m_p_ati_correction_start_window->get_back_button(), &QPushButton::clicked,
     this, &MainWindow::_handle_back_ati_correction_start_window);
+  QObject::connect(
+    m_p_ati_correction_start_window, &icp_import_dialog::ATICorrectionStartWindow::increase_iodine,
+    this, &MainWindow::_handle_increase_iodine);
+  QObject::connect(
+    m_p_ati_correction_start_window, &icp_import_dialog::ATICorrectionStartWindow::decrease_iodine,
+    this, &MainWindow::_handle_decrease_iodine);
 
   this->addToolBar(m_p_toolbar);
 
@@ -134,6 +143,9 @@ void MainWindow::_fill_element_list()
   m_elements.emplace(std::move(cobalt), new ElementDisplay(cobalt.get(), m_p_list_layout));
   auto iron = std::make_unique<reef_moonshiners::Iron>();
   m_elements.emplace(std::move(iron), new ElementDisplay(iron.get(), m_p_list_layout));
+  auto iodine = std::make_unique<reef_moonshiners::Iodine>();
+  m_p_iodine_element = iodine.get();  /* store local pointer for lookup */
+  m_elements.emplace(std::move(iodine), new ElementDisplay(m_p_iodine_element, m_p_list_layout));
 
   /* corrections */
   auto fluorine = std::make_unique<reef_moonshiners::Fluorine>();
@@ -171,15 +183,18 @@ void MainWindow::_save()
   fs::path out{
     QStandardPaths::displayName(
       QStandardPaths::AppDataLocation).toStdString()};
-  fs::create_directory(out);  /* create if not exists */
   out = out / "reef_moonshiners.dat";
   std::ofstream file{out, std::ios::binary};
+  binary_out(file, m_save_file_version);
   binary_out(file, reef_moonshiners::ElementBase::get_tank_size());
   binary_out(file, m_refugium_state);
   for (const auto & [daily, display] : m_elements) {
     (void)display;
-    file << *daily;
+    if (nullptr == dynamic_cast<reef_moonshiners::Iodine *>(daily.get())) {
+      file << *daily;
+    }
   }
+  file << *m_p_iodine_element;
   for (const auto & [correction, display] : m_correction_elements) {
     (void)display;
     file << *correction;
@@ -196,6 +211,17 @@ bool MainWindow::_load()
     return false;  /* this will be created after we save */
   }
   std::ifstream file{in, std::ios::binary};
+  /* read save_file_version */
+  size_t save_file_version = 0;
+  binary_in(file, save_file_version);
+  if (save_file_version > m_save_file_version) {
+    /* version zero assumed */
+    save_file_version = 0;
+    /* rewind to beginning of file */
+    file.seekg(0, file.beg);
+    reef_moonshiners::ElementBase::m_load_version = save_file_version;
+    fprintf(stderr, "warning: migrating forward from version '%zd'\n", save_file_version);
+  }
   double tank_size;
   binary_in(file, tank_size);
   reef_moonshiners::ElementBase::set_tank_size(tank_size);
@@ -205,7 +231,16 @@ bool MainWindow::_load()
   m_p_settings_window->get_refugium_checkbox()->setCheckState(Qt::CheckState(m_refugium_state));
   for (auto & [daily, display] : m_elements) {
     (void)display;
-    file >> *daily;
+    /* handle special-case loads */
+    if (daily->get_name() != "Iodine") {
+      file >> *daily;
+    }
+  }
+  /* load iodine */
+  if (save_file_version >= 1) {
+    file >> *m_p_iodine_element;
+    m_p_settings_window->get_iodine_spinbox()->setValue(
+      (int)m_p_iodine_element->get_dose(std::chrono::year_month_day{}));
   }
   for (auto & [correction, display] : m_correction_elements) {
     (void)display;
@@ -307,6 +342,12 @@ void MainWindow::_update_tank_size(const QString & text)
   this->_refresh_elements();
 }
 
+void MainWindow::_update_iodine_drops(int drops)
+{
+  m_p_iodine_element->set_drops(drops);
+  this->_refresh_elements();
+}
+
 void MainWindow::_handle_next_icp_selection_window(IcpSelection icp_selection)
 {
   switch (icp_selection) {
@@ -384,7 +425,10 @@ void MainWindow::_handle_next_ati_entry_window(const QString & text, const QDate
     /* set concentration */
     element->set_concentration(values[element->get_name()], date_of_sample);
   }
+  /* handle iodine */
   m_p_active_icp_selection_window = m_p_ati_correction_start_window;
+  m_p_ati_correction_start_window->set_iodine_increase(m_p_iodine_element->is_low());
+  m_p_ati_correction_start_window->set_iodine_decrease(m_p_iodine_element->is_high());
   this->setEnabled(true);
   this->_activate_icp_import_dialog();
 }
@@ -408,6 +452,26 @@ void MainWindow::_handle_back_ati_correction_start_window()
 {
   m_p_active_icp_selection_window = m_p_ati_entry_window;
   this->_activate_icp_import_dialog();
+}
+
+void MainWindow::_handle_increase_iodine()
+{
+  m_p_iodine_element->set_drops(m_p_iodine_element->get_dose(std::chrono::year_month_day{}) + 1);
+  m_p_settings_window->get_iodine_spinbox()->setValue(
+    m_p_iodine_element->get_dose(
+      std::chrono::
+      year_month_day{}));
+  this->_refresh_elements();
+}
+
+void MainWindow::_handle_decrease_iodine()
+{
+  m_p_iodine_element->set_drops(m_p_iodine_element->get_dose(std::chrono::year_month_day{}) - 1);
+  m_p_settings_window->get_iodine_spinbox()->setValue(
+    m_p_iodine_element->get_dose(
+      std::chrono::
+      year_month_day{}));
+  this->_refresh_elements();
 }
 
 }  // namespace reef_moonshiners::ui

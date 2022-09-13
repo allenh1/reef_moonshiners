@@ -20,6 +20,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QSpinBox>
 #include <QWidget>
 
 namespace reef_moonshiners::ui
@@ -30,49 +31,25 @@ class SettingsWindow : public QWidget
   Q_OBJECT
 
 public:
-  explicit SettingsWindow(QWidget * parent = nullptr)
-  : QWidget(parent)
-  {
-    m_p_tank_size_edit = new QLineEdit(tr("75.0"), this);
-    m_p_tank_size_label = new QLabel(tr("Tank Size (gallons):"), this);
-    m_p_refugium_label = new QLabel(tr("Refugium:"), this);
-    m_p_refugium_checkbox = new QCheckBox(this);
-
-
-    m_p_tank_size_layout = new QHBoxLayout();
-    m_p_tank_size_layout->addWidget(m_p_tank_size_label);
-    m_p_tank_size_layout->addWidget(m_p_tank_size_edit);
-
-    m_p_refugium_layout = new QHBoxLayout();
-    m_p_refugium_layout->addWidget(m_p_refugium_label);
-    m_p_refugium_layout->addWidget(m_p_refugium_checkbox);
-
-    m_p_main_layout = new QVBoxLayout();
-    m_p_main_layout->addLayout(m_p_tank_size_layout);
-    m_p_main_layout->addLayout(m_p_refugium_layout);
-
-    this->setLayout(m_p_main_layout);
-  }
-
+  explicit SettingsWindow(QWidget * parent = nullptr);
   ~SettingsWindow() override = default;
 
-  QLineEdit * get_tank_size_edit()
-  {
-    return m_p_tank_size_edit;
-  }
+  QLineEdit * get_tank_size_edit();
 
-  QCheckBox * get_refugium_checkbox()
-  {
-    return m_p_refugium_checkbox;
-  }
+  QCheckBox * get_refugium_checkbox();
+
+  QSpinBox * get_iodine_spinbox();
 
 private:
   QVBoxLayout * m_p_main_layout = nullptr;
   QHBoxLayout * m_p_refugium_layout = nullptr;
   QHBoxLayout * m_p_tank_size_layout = nullptr;
+  QHBoxLayout * m_p_iodine_layout = nullptr;
   QLineEdit * m_p_tank_size_edit = nullptr;
+  QSpinBox * m_p_iodine_drop_edit = nullptr;
   QLabel * m_p_tank_size_label = nullptr;
   QLabel * m_p_refugium_label = nullptr;
+  QLabel * m_p_iodine_label = nullptr;
   QCheckBox * m_p_refugium_checkbox = nullptr;
 };
 
