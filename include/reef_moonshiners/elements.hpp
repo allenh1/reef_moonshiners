@@ -18,6 +18,7 @@
 #include <reef_moonshiners/daily_element.hpp>
 #include <reef_moonshiners/correction_element.hpp>
 #include <reef_moonshiners/dropper_element.hpp>
+#include <reef_moonshiners/barium_element.hpp>
 
 namespace reef_moonshiners
 {
@@ -25,7 +26,6 @@ namespace reef_moonshiners
 CORRECTION_ELEMENT(Bromine, 54000E3, 85E3, 10E3);
 CORRECTION_ELEMENT(Boron, 4000E3, 7E3, 1E3);
 CORRECTION_ELEMENT(Fluorine, 1000E3, 1.5E3, 0.1E3);
-CORRECTION_ELEMENT(Barium, 100E3, 15.0, 8.0);
 CORRECTION_ELEMENT(Molybdenum, 100E3, 15.0, 3.0);
 CORRECTION_ELEMENT(Nickel, 100E3, 2.5, 0.5);
 CORRECTION_ELEMENT(Zinc, 1000E3, 5.0, 2.0);
