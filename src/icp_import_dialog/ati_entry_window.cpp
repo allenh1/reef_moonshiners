@@ -54,4 +54,24 @@ QPushButton * ATIEntryWindow::get_back_button() const
   return m_p_back_button;
 }
 
+void ATIEntryWindow::show_input_error_message()
+{
+  if (!m_error_message_showing) {
+    m_p_verify_input_label = new QLabel(tr("Verify input ID, and try again."));
+    m_p_main_layout->insertWidget(1, m_p_verify_input_label);
+    m_error_message_showing = true;
+  }
+}
+
+void ATIEntryWindow::hide_input_error_message()
+{
+  if (m_error_message_showing) {
+    QLayoutItem * item = m_p_main_layout->takeAt(1);
+    delete item->widget();
+    delete item;
+    m_error_message_showing = false;
+    m_p_verify_input_label = nullptr;
+  }
+}
+
 }  // namespace reef_moonshiners::ui::icp_import_dialog

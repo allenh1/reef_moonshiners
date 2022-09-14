@@ -38,16 +38,21 @@ public:
 
   Q_SIGNAL void next_button_pressed(const QString &, const QDate &);
 
+  void show_input_error_message();
+  void hide_input_error_message();
+
 private:
   QVBoxLayout * m_p_main_layout = nullptr;
   QHBoxLayout * m_p_button_layout = nullptr;
   QHBoxLayout * m_p_ati_entry_layout = nullptr;
   QLabel * m_p_analysis_id_label = nullptr;
   QLabel * m_p_collection_label = nullptr;
+  QLabel * m_p_verify_input_label = nullptr;
   QPushButton * m_p_next_button = nullptr;
   QPushButton * m_p_back_button = nullptr;
   QLineEdit * m_p_ati_id_entry = nullptr;
   QCalendarWidget * m_p_calendar_widget = nullptr;
+  bool m_error_message_showing = false;
 };
 
 }  // namespace reef_moonshiners::ui::icp_import_dialog

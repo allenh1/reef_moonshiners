@@ -408,11 +408,18 @@ void MainWindow::_handle_next_ati_entry_window(const QString & text, const QDate
   /* connect to the host */
   this->setDisabled(true);
   QNetworkAccessManager manager;
+  manager.setTransferTimeout(3E3);  /* three second timeout */
   QNetworkReply * response = manager.get(QNetworkRequest(QUrl(url)));
   QEventLoop event;
   connect(response, SIGNAL(finished()), &event, SLOT(quit()));
   event.exec();
-
+  if (QNetworkReply::NetworkError::NoError != response->error()) {
+    /* error in transfer */
+    this->setEnabled(true);
+    m_p_ati_entry_window->show_input_error_message();
+    return;
+  }
+  m_p_ati_entry_window->hide_input_error_message();
   // Source should be stored here
   QString html{response->readAll()};
   /* find the data table */
