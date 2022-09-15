@@ -96,6 +96,12 @@ MainWindow::MainWindow(QWidget * parent)
   QObject::connect(
     m_p_settings_window->get_vanadium_spinbox(), &QSpinBox::valueChanged,
     this, &MainWindow::_update_vanadium_drops);
+  QObject::connect(
+    m_p_settings_window, &SettingsWindow::rubidium_selection_changed,
+    this, &MainWindow::_update_rubidium_selection);
+  QObject::connect(
+    m_p_settings_window->get_rubidium_start_dateedit(), &QDateEdit::dateChanged,
+    this, &MainWindow::_update_rubidium_start_date);
 
   /* connections from ICP Dialog */
   QObject::connect(
@@ -155,6 +161,11 @@ void MainWindow::_fill_element_list()
   m_elements.emplace(std::move(cobalt), new ElementDisplay(cobalt.get(), m_p_list_layout));
   auto iron = std::make_unique<reef_moonshiners::Iron>();
   m_elements.emplace(std::move(iron), new ElementDisplay(iron.get(), m_p_list_layout));
+
+  /* rubidium */
+
+  m_p_rubidium_element = std::make_unique<reef_moonshiners::Rubidium>();
+  m_p_rubidium_display = new ElementDisplay(m_p_rubidium_element.get(), m_p_list_layout);
 
   /* dropper elements */
 
@@ -216,6 +227,7 @@ void MainWindow::_save()
     (void)display;
     file << *daily;
   }
+  file << *m_p_rubidium_element;
   for (const auto & [correction, display] : m_correction_elements) {
     (void)display;
     file << *correction;
@@ -229,6 +241,8 @@ bool MainWindow::_load()
       QStandardPaths::AppDataLocation).toStdString()};
   fs::path in = dir / "reef_moonshiners.dat";
   if (!fs::exists(in)) {
+    m_p_vanadium_element->set_drops(1);
+    m_p_iodine_element->set_drops(2);
     return false;  /* this will be created after we save */
   }
   std::ifstream file{in, std::ios::binary};
@@ -241,7 +255,6 @@ bool MainWindow::_load()
     /* rewind to beginning of file */
     file.seekg(0, file.beg);
     reef_moonshiners::ElementBase::m_load_version = save_file_version;
-    fprintf(stderr, "warning: migrating forward from version '%zd'\n", save_file_version);
   }
   double tank_size;
   binary_in(file, tank_size);
@@ -264,10 +277,19 @@ bool MainWindow::_load()
     m_p_vanadium_element->set_drops(1);
     m_p_iodine_element->set_drops(2);
   }
+  /* load rubidium */
+  if (save_file_version >= 2) {
+    file >> *m_p_rubidium_element;
+  }
   m_p_settings_window->get_iodine_spinbox()->setValue(
     (int)m_p_iodine_element->get_dose(std::chrono::year_month_day{}));
   m_p_settings_window->get_vanadium_spinbox()->setValue(
     (int)m_p_vanadium_element->get_dose(std::chrono::year_month_day{}));
+  const auto date = m_p_rubidium_element->get_initial_dose_date();
+  m_p_settings_window->get_rubidium_start_dateedit()->setDate(
+    QDate((int)date.year(), (unsigned)date.month(), (unsigned)date.day()));
+  m_p_settings_window->get_rubidium_combobox()->setCurrentIndex(
+    (uint8_t)m_p_rubidium_element->get_dosing_frequency());
   for (auto & [correction, display] : m_correction_elements) {
     (void)display;
     file >> *correction;
@@ -286,7 +308,7 @@ void MainWindow::_refresh_elements()
   for (auto &[element, display] : m_dropper_elements) {
     display->update_dosage(element.get(), m_p_calendar->selectedDate());
   }
-  // m_p_list_layout->update();
+  m_p_rubidium_display->update_dosage(m_p_rubidium_element.get(), m_p_calendar->selectedDate());
   _save();
 }
 
@@ -381,6 +403,20 @@ void MainWindow::_update_vanadium_drops(int drops)
 {
   m_p_vanadium_element->set_drops(drops);
   this->_refresh_elements();
+}
+
+void MainWindow::_update_rubidium_selection(RubidiumSelection rubidium_selection)
+{
+  m_p_rubidium_element->set_dosing_frequency(rubidium_selection);
+}
+
+void MainWindow::_update_rubidium_start_date(QDate rubidium_start_date)
+{
+  int year, month, day;
+  rubidium_start_date.getDate(&year, &month, &day);
+  const std::chrono::year_month_day date{
+    std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
+  m_p_rubidium_element->set_initial_dose_date(date);
 }
 
 void MainWindow::_handle_next_icp_selection_window(IcpSelection icp_selection)

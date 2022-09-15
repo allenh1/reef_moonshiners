@@ -15,13 +15,17 @@
 #ifndef REEF_MOONSHINERS__UI__SETTINGS_WINDOW_HPP_
 #define REEF_MOONSHINERS__UI__SETTINGS_WINDOW_HPP_
 
+#include <QComboBox>
 #include <QCheckBox>
+#include <QDateEdit>
 #include <QLineEdit>
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QSpinBox>
 #include <QWidget>
+
+#include <reef_moonshiners/rubidium_element.hpp>
 
 namespace reef_moonshiners::ui
 {
@@ -41,12 +45,19 @@ public:
   QSpinBox * get_iodine_spinbox();
   QSpinBox * get_vanadium_spinbox();
 
+  QComboBox * get_rubidium_combobox();
+  QDateEdit * get_rubidium_start_dateedit();
+
+  Q_SIGNAL void rubidium_selection_changed(RubidiumSelection seleciton);
+
 private:
   QVBoxLayout * m_p_main_layout = nullptr;
   QHBoxLayout * m_p_refugium_layout = nullptr;
   QHBoxLayout * m_p_tank_size_layout = nullptr;
   QHBoxLayout * m_p_iodine_layout = nullptr;
   QHBoxLayout * m_p_vanadium_layout = nullptr;
+  QHBoxLayout * m_p_rubidium_layout = nullptr;
+  QHBoxLayout * m_p_rubidium_start_layout = nullptr;
   QLineEdit * m_p_tank_size_edit = nullptr;
   QSpinBox * m_p_iodine_drop_edit = nullptr;
   QSpinBox * m_p_vanadium_drop_edit = nullptr;
@@ -54,7 +65,11 @@ private:
   QLabel * m_p_refugium_label = nullptr;
   QLabel * m_p_iodine_label = nullptr;
   QLabel * m_p_vanadium_label = nullptr;
+  QLabel * m_p_rubidium_label = nullptr;
+  QLabel * m_p_rubidium_start_label = nullptr;
   QCheckBox * m_p_refugium_checkbox = nullptr;
+  QComboBox * m_p_rubidium_combobox = nullptr;
+  QDateEdit * m_p_rubidium_start_dateedit = nullptr;
 };
 
 }  // namespace reef_moonshiners::ui
