@@ -62,6 +62,8 @@ protected:
   Q_SLOT void _update_tank_size(const QString & text);
   Q_SLOT void _update_iodine_drops(int drops);
   Q_SLOT void _update_vanadium_drops(int drops);
+  Q_SLOT void _update_rubidium_selection(RubidiumSelection rubidium_selection);
+  Q_SLOT void _update_rubidium_start_date(QDate rubidium_start_date);
 
   Q_SLOT void _handle_next_icp_selection_window(IcpSelection icp_selection);
   Q_SLOT void _handle_back_ati_entry_window();
@@ -77,7 +79,7 @@ protected:
   bool _load();
 
 private:
-  constexpr static size_t m_save_file_version = 1;  /* increment when changes happen to the format */
+  constexpr static size_t m_save_file_version = 2;  /* increment when changes happen to the format */
   int m_refugium_state = Qt::Unchecked;
 
   QVBoxLayout * m_p_main_layout = nullptr;
@@ -107,6 +109,8 @@ private:
     ElementDisplay *> m_dropper_elements;
   reef_moonshiners::Iodine * m_p_iodine_element = nullptr;
   reef_moonshiners::Vanadium * m_p_vanadium_element = nullptr;
+  std::unique_ptr<reef_moonshiners::Rubidium> m_p_rubidium_element = nullptr;
+  ElementDisplay * m_p_rubidium_display = nullptr;
   std::unordered_map<std::unique_ptr<reef_moonshiners::CorrectionElement>,
     ElementDisplay *> m_correction_elements;
 };
