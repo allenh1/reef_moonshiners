@@ -23,6 +23,7 @@
 #include <QDate>
 #include <QCalendarWidget>
 #include <QDockWidget>
+#include <QListWidget>
 #include <QScrollArea>
 #include <QToolBar>
 #include <QStandardPaths>
@@ -50,7 +51,6 @@ protected:
   using IcpSelection = reef_moonshiners::ui::icp_import_dialog::IcpSelection;
 
   void _fill_element_list();
-  void _populate_list_layout();
 
   Q_SLOT void _refresh_elements();
 
@@ -74,6 +74,7 @@ protected:
   Q_SLOT void _handle_decrease_iodine();
   Q_SLOT void _handle_increase_vanadium();
   Q_SLOT void _handle_decrease_vanadium();
+  Q_SLOT void _handle_item_clicked(QListWidgetItem * p_item);
 
   Q_SLOT void _save();
   bool _load();
@@ -87,7 +88,6 @@ private:
   QLabel * m_p_dose_label = nullptr;
   QDockWidget * m_p_calendar_widget = nullptr;
   QWidget * m_p_central_widget = nullptr;
-  QWidget * m_p_list_widget = nullptr;
   QCalendarWidget * m_p_calendar = nullptr;
   QToolBar * m_p_toolbar = nullptr;
   QAction * m_p_import_action = nullptr;
@@ -103,6 +103,8 @@ private:
   QWidget * m_p_active_window = nullptr;
   QWidget * m_p_active_icp_selection_window = nullptr;
   QAction * m_p_active_action = nullptr;
+
+  QListWidget * m_p_list_widget = nullptr;
 
   std::unordered_map<std::unique_ptr<reef_moonshiners::DailyElement>, ElementDisplay *> m_elements;
   std::unordered_map<std::unique_ptr<reef_moonshiners::DropperElement>,
