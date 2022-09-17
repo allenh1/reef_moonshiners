@@ -26,9 +26,9 @@ ATICorrectionStartWindow::ATICorrectionStartWindow(QWidget * parent)
   m_p_okay_button = new QPushButton(tr("&Okay"));
   m_p_back_button = new QPushButton(tr("&Back"));
   m_p_iodine_checkbox = new QCheckBox();
-  m_p_iodine_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 20px; height: 20px}"));
+  m_p_iodine_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
   m_p_vanadium_checkbox = new QCheckBox();
-  m_p_vanadium_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 20px; height: 20px}"));
+  m_p_vanadium_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
 
   m_p_button_layout = new QHBoxLayout();
   m_p_button_layout->addWidget(m_p_back_button);
