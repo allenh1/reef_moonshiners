@@ -231,8 +231,7 @@ void MainWindow::_handle_item_clicked(QListWidgetItem * p_item)
 void MainWindow::_save()
 {
   fs::path out{
-    QStandardPaths::displayName(
-      QStandardPaths::AppDataLocation).toStdString()};
+    QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString()};
   out = out / "reef_moonshiners.dat";
   std::ofstream file{out, std::ios::binary};
   binary_out(file, m_save_file_version);
@@ -255,9 +254,7 @@ void MainWindow::_save()
 
 bool MainWindow::_load()
 {
-  fs::path dir{
-    QStandardPaths::displayName(
-      QStandardPaths::AppDataLocation).toStdString()};
+  fs::path dir{QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString()};
   fs::path in = dir / "reef_moonshiners.dat";
   if (!fs::exists(in)) {
     m_p_vanadium_element->set_drops(1);
