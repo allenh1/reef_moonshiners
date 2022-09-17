@@ -106,6 +106,9 @@ MainWindow::MainWindow(QWidget * parent)
   QObject::connect(
     m_p_settings_window->get_rubidium_start_dateedit(), &QDateEdit::dateChanged,
     this, &MainWindow::_update_rubidium_start_date);
+  QObject::connect(
+    m_p_settings_window->get_okay_button(), &QPushButton::clicked,
+    this, &MainWindow::_activate_calendar_window);
 
   /* connections from ICP Dialog */
   QObject::connect(

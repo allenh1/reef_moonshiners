@@ -24,19 +24,20 @@
 #include <QVBoxLayout>
 #include <QSpinBox>
 #include <QWidget>
+#include <QPushButton>
 
 #include <reef_moonshiners/rubidium_element.hpp>
 
 namespace reef_moonshiners::ui
 {
 
-class SettingsWindow : public QWidget
+class SettingsWindow final : public QWidget
 {
   Q_OBJECT
 
 public:
   explicit SettingsWindow(QWidget * parent = nullptr);
-  ~SettingsWindow() override = default;
+  ~SettingsWindow() final = default;
 
   QLineEdit * get_tank_size_edit();
 
@@ -48,7 +49,12 @@ public:
   QComboBox * get_rubidium_combobox();
   QDateEdit * get_rubidium_start_dateedit();
 
+  QPushButton * get_okay_button();
+
   Q_SIGNAL void rubidium_selection_changed(RubidiumSelection seleciton);
+
+protected:
+  void resizeEvent(QResizeEvent * event) final;
 
 private:
   QVBoxLayout * m_p_main_layout = nullptr;
@@ -58,6 +64,8 @@ private:
   QHBoxLayout * m_p_vanadium_layout = nullptr;
   QHBoxLayout * m_p_rubidium_layout = nullptr;
   QHBoxLayout * m_p_rubidium_start_layout = nullptr;
+  QHBoxLayout * m_p_okay_button_layout = nullptr;
+  QPushButton * m_p_okay_button = nullptr;
   QLineEdit * m_p_tank_size_edit = nullptr;
   QSpinBox * m_p_iodine_drop_edit = nullptr;
   QSpinBox * m_p_vanadium_drop_edit = nullptr;
