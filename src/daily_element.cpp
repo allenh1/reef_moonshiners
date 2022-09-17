@@ -91,7 +91,8 @@ void DailyElement::write_to(std::ostream & stream) const
 {
   this->ElementBase::write_to(stream);
   binary_out(stream, m_multiplier);
-  binary_out(stream, m_use_nano_dose);
+  int as_int = m_use_nano_dose;
+  binary_out(stream, (int)as_int);
 }
 
 void DailyElement::read_from(std::istream & stream)
@@ -99,7 +100,9 @@ void DailyElement::read_from(std::istream & stream)
   this->ElementBase::read_from(stream);
   binary_in(stream, m_multiplier);
   if (reef_moonshiners::ElementBase::m_load_version >= 3) {
-    binary_in(stream, m_use_nano_dose);
+    int nano_dose;
+    binary_in(stream, nano_dose);
+    m_use_nano_dose = nano_dose;
   }
 }
 
