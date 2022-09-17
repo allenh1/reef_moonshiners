@@ -2,6 +2,24 @@
 Changelog for package reef_moonshiners
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.0 (2022-09-17)
+------------------
+* Disable nano dose checkbox on Windows
+* Fix nano dose saving on android
+* Add Nano Doses (`#26 <https://github.com/allenh1/reef_moonshiners/issues/26>`_)
+* Add Okay Button to Settings Window (`#25 <https://github.com/allenh1/reef_moonshiners/issues/25>`_)
+* Increase CheckBox Size (`#24 <https://github.com/allenh1/reef_moonshiners/issues/24>`_)
+  * Change ElementDisplay to inherit from QListWidgetItem
+  * Fix save file path
+  * Increase checkbox size
+* Implement Rubidium Element (`#23 <https://github.com/allenh1/reef_moonshiners/issues/23>`_)
+* Fix "App Freezes with Invalid ATI ID" (`#22 <https://github.com/allenh1/reef_moonshiners/issues/22>`_)
+* Fix Barium calculation (`#20 <https://github.com/allenh1/reef_moonshiners/issues/20>`_)
+* Implement Iodine and Vanadium (`#17 <https://github.com/allenh1/reef_moonshiners/issues/17>`_)
+  * Implement Iodine
+  * Implement Vanadium element
+* Contributors: Hunter L. Allen
+
 0.1.0 (2022-09-11)
 ------------------
 * Update README
