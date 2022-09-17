@@ -225,7 +225,17 @@ public:
 
   friend std::ostream & operator<<(std::ostream & stream, const ElementBase & element);
 
-  inline static size_t m_load_version = 1;
+  static void set_load_version(size_t _load_version)
+  {
+    reef_moonshiners::ElementBase::m_load_version = _load_version;
+  }
+
+  static size_t get_load_version()
+  {
+    return reef_moonshiners::ElementBase::m_load_version;
+  }
+
+  static size_t m_load_version;
 
 protected:
   double _get_concentration_after_dose(

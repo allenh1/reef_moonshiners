@@ -21,13 +21,18 @@ namespace reef_moonshiners
 
 DailyElement::DailyElement(
   const std::string & _name, const double _element_concentration,
+  const double _nano_element_concentration,
   const double _target_concentration, const double _max_adjustment)
-: ElementBase(_name, _element_concentration, _target_concentration, _max_adjustment)
+: ElementBase(_name, _element_concentration, _target_concentration, _max_adjustment),
+  m_nano_concentration(_nano_element_concentration)
 {
 }
 
 double DailyElement::get_dose(const std::chrono::year_month_day &) const
 {
+  if (m_use_nano_dose) {
+    return get_nano_dose();
+  }
   if (this->get_current_concentration_estimate() >= this->get_target_concentration()) {
     /* no need to supplement this, we should not be detecting these elements */
     return 0.0;
@@ -35,6 +40,18 @@ double DailyElement::get_dose(const std::chrono::year_month_day &) const
   const double dose_in_liters =
     ((this->get_target_concentration() * this->get_tank_size()) /
     (this->get_element_concentration() - this->get_target_concentration()));
+  return round_places<2>(dose_in_liters * 1E3) * m_multiplier;
+}
+
+double DailyElement::get_nano_dose() const
+{
+  if (this->get_current_concentration_estimate() >= this->get_target_concentration()) {
+    /* no need to supplement this, we should not be detecting these elements */
+    return 0.0;
+  }
+  const double dose_in_liters =
+    ((this->get_target_concentration() * this->get_tank_size()) /
+    (m_nano_concentration - this->get_target_concentration()));
   return round_places<2>(dose_in_liters * 1E3) * m_multiplier;
 }
 
@@ -60,16 +77,30 @@ void DailyElement::set_multiplier(const double _multiplier)
   m_multiplier = _multiplier;
 }
 
+bool DailyElement::get_use_nano_dose() const
+{
+  return m_use_nano_dose;
+}
+
+void DailyElement::set_use_nano_dose(const bool _use_nano_dose)
+{
+  m_use_nano_dose = _use_nano_dose;
+}
+
 void DailyElement::write_to(std::ostream & stream) const
 {
   this->ElementBase::write_to(stream);
   binary_out(stream, m_multiplier);
+  binary_out(stream, m_use_nano_dose);
 }
 
 void DailyElement::read_from(std::istream & stream)
 {
   this->ElementBase::read_from(stream);
   binary_in(stream, m_multiplier);
+  if (reef_moonshiners::ElementBase::m_load_version >= 3) {
+    binary_in(stream, m_use_nano_dose);
+  }
 }
 
 }  // namespace reef_moonshiners

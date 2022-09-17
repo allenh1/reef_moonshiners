@@ -21,7 +21,7 @@ DropperElement::DropperElement(
   const std::string & _name,
   const double _low_concentration,
   const double _high_concentration)
-: DailyElement(_name, 0.0, _low_concentration, 0.0),
+: DailyElement(_name, 0.0, 0.0, _low_concentration, 0.0),
   m_high_concentration(_high_concentration)
 {
   this->set_dosing_unit(DosingUnit::DROPS);

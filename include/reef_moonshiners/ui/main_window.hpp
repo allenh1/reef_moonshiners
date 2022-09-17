@@ -59,6 +59,7 @@ protected:
   Q_SLOT void _activate_icp_import_dialog();
 
   Q_SLOT void _update_refugium_state(int state);
+  Q_SLOT void _update_nano_dose_state(int state);
   Q_SLOT void _update_tank_size(const QString & text);
   Q_SLOT void _update_iodine_drops(int drops);
   Q_SLOT void _update_vanadium_drops(int drops);
@@ -81,8 +82,9 @@ protected:
   bool _load();
 
 private:
-  constexpr static size_t m_save_file_version = 2;  /* increment when changes happen to the format */
+  constexpr static size_t m_save_file_version = 3;  /* increment when changes happen to the format */
   int m_refugium_state = Qt::Unchecked;
+  int m_nano_dose_state = Qt::Unchecked;
 
   QVBoxLayout * m_p_main_layout = nullptr;
   QVBoxLayout * m_p_list_layout = nullptr;

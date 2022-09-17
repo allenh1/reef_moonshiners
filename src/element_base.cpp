@@ -21,6 +21,8 @@ using namespace std::string_literals;
 namespace reef_moonshiners
 {
 
+size_t ElementBase::m_load_version = 0;
+
 ElementBase::ElementBase(
   const std::string & _name, const double _element_concentration,
   const double _target_concentration, const double _max_adjustment)

@@ -33,6 +33,8 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_rubidium_start_dateedit = new QDateEdit();
   m_p_iodine_drop_edit = new QSpinBox();
   m_p_vanadium_drop_edit = new QSpinBox();
+  m_p_nano_dose_label = new QLabel(tr("Use Nano/Pump Dosages:"), this);
+  m_p_nano_dose_checkbox = new QCheckBox(this);
 
   m_p_iodine_drop_edit->setValue(2);
   m_p_vanadium_drop_edit->setValue(1);
@@ -65,6 +67,10 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_okay_button_layout->addSpacing(this->size().width() / 2);
   m_p_okay_button_layout->addWidget(m_p_okay_button);
 
+  m_p_nano_dose_layout = new QHBoxLayout();
+  m_p_nano_dose_layout->addWidget(m_p_nano_dose_label);
+  m_p_nano_dose_layout->addWidget(m_p_nano_dose_checkbox);
+
   m_p_rubidium_combobox->insertItem(0, tr("Daily"));
   m_p_rubidium_combobox->insertItem(1, tr("Monthly"));
   m_p_rubidium_combobox->insertItem(2, tr("Quarterly"));
@@ -72,6 +78,7 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_main_layout = new QVBoxLayout();
   m_p_main_layout->addLayout(m_p_tank_size_layout);
   m_p_main_layout->addLayout(m_p_iodine_layout);
+  m_p_main_layout->addLayout(m_p_nano_dose_layout);
   m_p_main_layout->addLayout(m_p_vanadium_layout);
   m_p_main_layout->addLayout(m_p_rubidium_layout);
   m_p_main_layout->addLayout(m_p_rubidium_start_layout);
@@ -80,6 +87,7 @@ SettingsWindow::SettingsWindow(QWidget * parent)
 
   this->setLayout(m_p_main_layout);
   m_p_refugium_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
+  m_p_nano_dose_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
   QObject::connect(
     m_p_rubidium_combobox, &QComboBox::currentIndexChanged, this,
     [this](int index) {
@@ -120,6 +128,11 @@ QComboBox * SettingsWindow::get_rubidium_combobox()
 QPushButton * SettingsWindow::get_okay_button()
 {
   return m_p_okay_button;
+}
+
+QCheckBox * SettingsWindow::get_nano_dose_checkbox()
+{
+  return m_p_nano_dose_checkbox;
 }
 
 void SettingsWindow::resizeEvent(QResizeEvent * event)
