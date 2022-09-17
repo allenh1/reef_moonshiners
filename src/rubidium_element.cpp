@@ -18,7 +18,7 @@ namespace reef_moonshiners
 {
 
 Rubidium::Rubidium()
-: DailyElement("Rubidium", 1000E3, 0.2, 200)
+: DailyElement("Rubidium", 1000E3, 1000E3, 0.2, 200)
 {
 }
 

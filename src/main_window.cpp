@@ -109,6 +109,9 @@ MainWindow::MainWindow(QWidget * parent)
   QObject::connect(
     m_p_settings_window->get_okay_button(), &QPushButton::clicked,
     this, &MainWindow::_activate_calendar_window);
+  QObject::connect(
+    m_p_settings_window->get_nano_dose_checkbox(), &QCheckBox::stateChanged,
+    this, &MainWindow::_update_nano_dose_state);
 
   /* connections from ICP Dialog */
   QObject::connect(
@@ -232,11 +235,13 @@ void MainWindow::_save()
 {
   fs::path out{
     QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString()};
+  fs::create_directory(out);  /* create if not exists */
   out = out / "reef_moonshiners.dat";
   std::ofstream file{out, std::ios::binary};
   binary_out(file, m_save_file_version);
   binary_out(file, reef_moonshiners::ElementBase::get_tank_size());
   binary_out(file, m_refugium_state);
+  binary_out(file, m_nano_dose_state);
   for (const auto & [daily, display] : m_elements) {
     (void)display;
     file << *daily;
@@ -270,8 +275,8 @@ bool MainWindow::_load()
     save_file_version = 0;
     /* rewind to beginning of file */
     file.seekg(0, file.beg);
-    reef_moonshiners::ElementBase::m_load_version = save_file_version;
   }
+  reef_moonshiners::ElementBase::set_load_version(save_file_version);
   double tank_size;
   binary_in(file, tank_size);
   reef_moonshiners::ElementBase::set_tank_size(tank_size);
@@ -279,6 +284,10 @@ bool MainWindow::_load()
   m_p_settings_window->get_tank_size_edit()->setText(QString().setNum(gallons));
   binary_in(file, m_refugium_state);
   m_p_settings_window->get_refugium_checkbox()->setCheckState(Qt::CheckState(m_refugium_state));
+  if (save_file_version >= 3) {
+    binary_in(file, m_nano_dose_state);
+  }
+  m_p_settings_window->get_nano_dose_checkbox()->setCheckState(Qt::CheckState(m_nano_dose_state));
   for (auto & [daily, display] : m_elements) {
     (void)display;
     file >> *daily;
@@ -385,6 +394,21 @@ void MainWindow::_update_refugium_state(int state)
     }
   }
   m_refugium_state = state;
+  this->_refresh_elements();
+}
+
+void MainWindow::_update_nano_dose_state(int state)
+{
+  if (Qt::Checked == state) {
+    for (const auto & [element, display] : m_elements) {
+      element->set_use_nano_dose(true);  /* this doubles the daily dose */
+    }
+  } else if (Qt::Unchecked == state) {
+    for (const auto & [element, display] : m_elements) {
+      element->set_use_nano_dose(false);
+    }
+  }
+  m_nano_dose_state = state;
   this->_refresh_elements();
 }
 

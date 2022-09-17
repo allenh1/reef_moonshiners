@@ -43,6 +43,8 @@ public:
 
   QCheckBox * get_refugium_checkbox();
 
+  QCheckBox * get_nano_dose_checkbox();
+
   QSpinBox * get_iodine_spinbox();
   QSpinBox * get_vanadium_spinbox();
 
@@ -65,6 +67,7 @@ private:
   QHBoxLayout * m_p_rubidium_layout = nullptr;
   QHBoxLayout * m_p_rubidium_start_layout = nullptr;
   QHBoxLayout * m_p_okay_button_layout = nullptr;
+  QHBoxLayout * m_p_nano_dose_layout = nullptr;
   QPushButton * m_p_okay_button = nullptr;
   QLineEdit * m_p_tank_size_edit = nullptr;
   QSpinBox * m_p_iodine_drop_edit = nullptr;
@@ -75,7 +78,9 @@ private:
   QLabel * m_p_vanadium_label = nullptr;
   QLabel * m_p_rubidium_label = nullptr;
   QLabel * m_p_rubidium_start_label = nullptr;
+  QLabel * m_p_nano_dose_label = nullptr;
   QCheckBox * m_p_refugium_checkbox = nullptr;
+  QCheckBox * m_p_nano_dose_checkbox = nullptr;
   QComboBox * m_p_rubidium_combobox = nullptr;
   QDateEdit * m_p_rubidium_start_dateedit = nullptr;
 };
