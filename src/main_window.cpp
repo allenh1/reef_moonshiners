@@ -54,13 +54,10 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_calendar = new QCalendarWidget(this);
   m_p_calendar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
   m_p_central_widget = new QWidget(this);
-  // m_p_list_widget = new QWidget(m_p_central_widget);
   m_p_main_layout = new QVBoxLayout(m_p_central_widget);
   m_p_main_layout->addWidget(m_p_calendar);
   m_p_main_layout->addWidget(m_p_dose_label);
 
-  // m_p_list_layout = new QVBoxLayout();
-  // m_p_main_layout->addLayout(m_p_list_layout);
   m_p_list_widget = new QListWidget();
   m_p_main_layout->addWidget(m_p_list_widget);
 
@@ -414,7 +411,7 @@ void MainWindow::_update_vanadium_drops(int drops)
   this->_refresh_elements();
 }
 
-void MainWindow::_update_rubidium_selection(RubidiumSelection rubidium_selection)
+void MainWindow::_update_rubidium_selection(reef_moonshiners::RubidiumSelection rubidium_selection)
 {
   m_p_rubidium_element->set_dosing_frequency(rubidium_selection);
 }
@@ -428,7 +425,7 @@ void MainWindow::_update_rubidium_start_date(QDate rubidium_start_date)
   m_p_rubidium_element->set_initial_dose_date(date);
 }
 
-void MainWindow::_handle_next_icp_selection_window(IcpSelection icp_selection)
+void MainWindow::_handle_next_icp_selection_window(reef_moonshiners::ui::icp_import_dialog::IcpSelection icp_selection)
 {
   switch (icp_selection) {
     case IcpSelection::ATI_ICP_OES:
