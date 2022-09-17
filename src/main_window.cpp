@@ -54,13 +54,12 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_calendar = new QCalendarWidget(this);
   m_p_calendar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
   m_p_central_widget = new QWidget(this);
-  // m_p_list_widget = new QWidget(m_p_central_widget);
   m_p_main_layout = new QVBoxLayout(m_p_central_widget);
   m_p_main_layout->addWidget(m_p_calendar);
   m_p_main_layout->addWidget(m_p_dose_label);
 
-  m_p_list_layout = new QVBoxLayout();
-  m_p_main_layout->addLayout(m_p_list_layout);
+  m_p_list_widget = new QListWidget();
+  m_p_main_layout->addWidget(m_p_list_widget);
 
   m_p_toolbar = new QToolBar(this);
   m_p_toolbar->addAction(m_p_import_action);
@@ -72,6 +71,11 @@ MainWindow::MainWindow(QWidget * parent)
 
   m_p_active_window = m_p_central_widget;
   m_p_active_action = m_p_calendar_action;
+
+  /* list connections */
+  QObject::connect(
+    m_p_list_widget, &QListWidget::itemClicked,
+    this, &MainWindow::_handle_item_clicked);
 
   /* action mappings */
   QObject::connect(
@@ -142,7 +146,6 @@ MainWindow::MainWindow(QWidget * parent)
   this->setWindowIcon(QIcon(":/icon.png"));
 
   this->_fill_element_list();
-  this->_populate_list_layout();
   this->_load();
   this->_refresh_elements();
 }
@@ -152,68 +155,80 @@ void MainWindow::_fill_element_list()
   /* daily elements */
 
   auto manganese = std::make_unique<reef_moonshiners::Manganese>();
-  m_elements.emplace(std::move(manganese), new ElementDisplay(manganese.get(), m_p_list_layout));
+  m_elements.emplace(std::move(manganese), new ElementDisplay(manganese.get(), m_p_list_widget));
   auto chromium = std::make_unique<reef_moonshiners::Chromium>();
-  m_elements.emplace(std::move(chromium), new ElementDisplay(chromium.get(), m_p_list_layout));
+  m_elements.emplace(std::move(chromium), new ElementDisplay(chromium.get(), m_p_list_widget));
   auto selenium = std::make_unique<reef_moonshiners::Selenium>();
-  m_elements.emplace(std::move(selenium), new ElementDisplay(selenium.get(), m_p_list_layout));
+  m_elements.emplace(std::move(selenium), new ElementDisplay(selenium.get(), m_p_list_widget));
   auto cobalt = std::make_unique<reef_moonshiners::Cobalt>();
-  m_elements.emplace(std::move(cobalt), new ElementDisplay(cobalt.get(), m_p_list_layout));
+  m_elements.emplace(std::move(cobalt), new ElementDisplay(cobalt.get(), m_p_list_widget));
   auto iron = std::make_unique<reef_moonshiners::Iron>();
-  m_elements.emplace(std::move(iron), new ElementDisplay(iron.get(), m_p_list_layout));
+  m_elements.emplace(std::move(iron), new ElementDisplay(iron.get(), m_p_list_widget));
 
   /* rubidium */
 
   m_p_rubidium_element = std::make_unique<reef_moonshiners::Rubidium>();
-  m_p_rubidium_display = new ElementDisplay(m_p_rubidium_element.get(), m_p_list_layout);
+  m_p_rubidium_display = new ElementDisplay(m_p_rubidium_element.get(), m_p_list_widget);
 
   /* dropper elements */
 
   auto iodine = std::make_unique<reef_moonshiners::Iodine>();
   m_p_iodine_element = iodine.get();
-  m_dropper_elements.emplace(std::move(iodine), new ElementDisplay(iodine.get(), m_p_list_layout));
+  m_dropper_elements.emplace(std::move(iodine), new ElementDisplay(iodine.get(), m_p_list_widget));
   auto vanadium = std::make_unique<reef_moonshiners::Vanadium>();
   m_p_vanadium_element = vanadium.get();
   m_dropper_elements.emplace(
     std::move(vanadium), new ElementDisplay(
-      vanadium.get(), m_p_list_layout));
+      vanadium.get(), m_p_list_widget));
 
   /* corrections */
   auto fluorine = std::make_unique<reef_moonshiners::Fluorine>();
   m_correction_elements.emplace(
     std::move(fluorine),
-    new ElementDisplay(fluorine.get(), m_p_list_layout));
+    new ElementDisplay(fluorine.get(), m_p_list_widget));
   auto bromine = std::make_unique<reef_moonshiners::Bromine>();
   m_correction_elements.emplace(
     std::move(bromine),
-    new ElementDisplay(bromine.get(), m_p_list_layout));
+    new ElementDisplay(bromine.get(), m_p_list_widget));
   auto nickel = std::make_unique<reef_moonshiners::Nickel>();
   m_correction_elements.emplace(
     std::move(nickel),
-    new ElementDisplay(nickel.get(), m_p_list_layout));
+    new ElementDisplay(nickel.get(), m_p_list_widget));
   auto zinc = std::make_unique<reef_moonshiners::Zinc>();
-  m_correction_elements.emplace(std::move(zinc), new ElementDisplay(zinc.get(), m_p_list_layout));
+  m_correction_elements.emplace(std::move(zinc), new ElementDisplay(zinc.get(), m_p_list_widget));
   auto barium = std::make_unique<reef_moonshiners::Barium>();
   m_correction_elements.emplace(
     std::move(barium),
-    new ElementDisplay(barium.get(), m_p_list_layout));
+    new ElementDisplay(barium.get(), m_p_list_widget));
   auto boron = std::make_unique<reef_moonshiners::Boron>();
-  m_correction_elements.emplace(std::move(boron), new ElementDisplay(boron.get(), m_p_list_layout));
+  m_correction_elements.emplace(std::move(boron), new ElementDisplay(boron.get(), m_p_list_widget));
   auto strontium = std::make_unique<reef_moonshiners::Strontium>();
   m_correction_elements.emplace(
     std::move(strontium),
-    new ElementDisplay(strontium.get(), m_p_list_layout));
+    new ElementDisplay(strontium.get(), m_p_list_widget));
   auto potassium = std::make_unique<reef_moonshiners::Potassium>();
   m_correction_elements.emplace(
     std::move(potassium),
-    new ElementDisplay(potassium.get(), m_p_list_layout));
+    new ElementDisplay(potassium.get(), m_p_list_widget));
+}
+
+void MainWindow::_handle_item_clicked(QListWidgetItem * p_item)
+{
+  if (nullptr == p_item) {
+    return;
+  }
+
+  if (p_item->data(Qt::CheckStateRole) != Qt::Checked) {
+    dynamic_cast<ElementDisplay *>(p_item)->set_checked(true);
+  } else {
+    dynamic_cast<ElementDisplay *>(p_item)->set_checked(false);
+  }
 }
 
 void MainWindow::_save()
 {
   fs::path out{
-    QStandardPaths::displayName(
-      QStandardPaths::AppDataLocation).toStdString()};
+    QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString()};
   out = out / "reef_moonshiners.dat";
   std::ofstream file{out, std::ios::binary};
   binary_out(file, m_save_file_version);
@@ -236,9 +251,7 @@ void MainWindow::_save()
 
 bool MainWindow::_load()
 {
-  fs::path dir{
-    QStandardPaths::displayName(
-      QStandardPaths::AppDataLocation).toStdString()};
+  fs::path dir{QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString()};
   fs::path in = dir / "reef_moonshiners.dat";
   if (!fs::exists(in)) {
     m_p_vanadium_element->set_drops(1);
@@ -300,23 +313,16 @@ bool MainWindow::_load()
 void MainWindow::_refresh_elements()
 {
   for (auto &[element, display] : m_correction_elements) {
-    display->update_dosage(element.get(), m_p_calendar->selectedDate());
+    display->update_dosage(m_p_calendar->selectedDate());
   }
   for (auto &[element, display] : m_elements) {
-    display->update_dosage(element.get(), m_p_calendar->selectedDate());
+    display->update_dosage(m_p_calendar->selectedDate());
   }
   for (auto &[element, display] : m_dropper_elements) {
-    display->update_dosage(element.get(), m_p_calendar->selectedDate());
+    display->update_dosage(m_p_calendar->selectedDate());
   }
-  m_p_rubidium_display->update_dosage(m_p_rubidium_element.get(), m_p_calendar->selectedDate());
+  m_p_rubidium_display->update_dosage(m_p_calendar->selectedDate());
   _save();
-}
-
-void MainWindow::_populate_list_layout()
-{
-  for (auto &[element, display] : m_elements) {
-    m_p_list_layout->addWidget(display);
-  }
 }
 
 void MainWindow::_activate_settings_window()
@@ -405,7 +411,7 @@ void MainWindow::_update_vanadium_drops(int drops)
   this->_refresh_elements();
 }
 
-void MainWindow::_update_rubidium_selection(RubidiumSelection rubidium_selection)
+void MainWindow::_update_rubidium_selection(reef_moonshiners::RubidiumSelection rubidium_selection)
 {
   m_p_rubidium_element->set_dosing_frequency(rubidium_selection);
 }
@@ -419,7 +425,8 @@ void MainWindow::_update_rubidium_start_date(QDate rubidium_start_date)
   m_p_rubidium_element->set_initial_dose_date(date);
 }
 
-void MainWindow::_handle_next_icp_selection_window(IcpSelection icp_selection)
+void MainWindow::_handle_next_icp_selection_window(
+  reef_moonshiners::ui::icp_import_dialog::IcpSelection icp_selection)
 {
   switch (icp_selection) {
     case IcpSelection::ATI_ICP_OES:
@@ -444,7 +451,7 @@ void MainWindow::_handle_next_ati_entry_window(const QString & text, const QDate
   /* connect to the host */
   this->setDisabled(true);
   QNetworkAccessManager manager;
-  manager.setTransferTimeout(3E3);  /* three second timeout */
+  manager.setTransferTimeout(10E3);  /* ten second timeout */
   QNetworkReply * response = manager.get(QNetworkRequest(QUrl(url)));
   QEventLoop event;
   connect(response, SIGNAL(finished()), &event, SLOT(quit()));
