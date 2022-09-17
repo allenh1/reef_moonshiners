@@ -88,6 +88,9 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   this->setLayout(m_p_main_layout);
   m_p_refugium_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
   m_p_nano_dose_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
+#ifdef WIN32
+  m_p_nano_dose_checkbox->setDisabled(true);
+#endif
   QObject::connect(
     m_p_rubidium_combobox, &QComboBox::currentIndexChanged, this,
     [this](int index) {
