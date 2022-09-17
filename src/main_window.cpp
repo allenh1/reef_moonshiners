@@ -425,7 +425,8 @@ void MainWindow::_update_rubidium_start_date(QDate rubidium_start_date)
   m_p_rubidium_element->set_initial_dose_date(date);
 }
 
-void MainWindow::_handle_next_icp_selection_window(reef_moonshiners::ui::icp_import_dialog::IcpSelection icp_selection)
+void MainWindow::_handle_next_icp_selection_window(
+  reef_moonshiners::ui::icp_import_dialog::IcpSelection icp_selection)
 {
   switch (icp_selection) {
     case IcpSelection::ATI_ICP_OES:

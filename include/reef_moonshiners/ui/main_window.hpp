@@ -65,7 +65,8 @@ protected:
   Q_SLOT void _update_rubidium_selection(reef_moonshiners::RubidiumSelection rubidium_selection);
   Q_SLOT void _update_rubidium_start_date(QDate rubidium_start_date);
 
-  Q_SLOT void _handle_next_icp_selection_window(reef_moonshiners::ui::icp_import_dialog::IcpSelection icp_selection);
+  Q_SLOT void _handle_next_icp_selection_window(
+    reef_moonshiners::ui::icp_import_dialog::IcpSelection icp_selection);
   Q_SLOT void _handle_back_ati_entry_window();
   Q_SLOT void _handle_next_ati_entry_window(const QString & text, const QDate & date);
   Q_SLOT void _handle_okay_ati_correction_start_window(const QDate & date);
