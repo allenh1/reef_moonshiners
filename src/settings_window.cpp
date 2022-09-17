@@ -27,6 +27,7 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_vanadium_label = new QLabel(tr("Vanadium drops (1-2 per 100 gallons):"));
   m_p_rubidium_label = new QLabel(tr("Rubidium Frequency:"));
   m_p_rubidium_start_label = new QLabel(tr("Initial Rubidium Dose:"));
+  m_p_okay_button = new QPushButton(tr("&Okay"));
   m_p_refugium_checkbox = new QCheckBox(this);
   m_p_rubidium_combobox = new QComboBox();
   m_p_rubidium_start_dateedit = new QDateEdit();
@@ -60,6 +61,10 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_refugium_layout->addWidget(m_p_refugium_label);
   m_p_refugium_layout->addWidget(m_p_refugium_checkbox);
 
+  m_p_okay_button_layout = new QHBoxLayout();
+  m_p_okay_button_layout->addSpacing(this->size().width() / 2);
+  m_p_okay_button_layout->addWidget(m_p_okay_button);
+
   m_p_rubidium_combobox->insertItem(0, tr("Daily"));
   m_p_rubidium_combobox->insertItem(1, tr("Monthly"));
   m_p_rubidium_combobox->insertItem(2, tr("Quarterly"));
@@ -71,6 +76,7 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_main_layout->addLayout(m_p_rubidium_layout);
   m_p_main_layout->addLayout(m_p_rubidium_start_layout);
   m_p_main_layout->addLayout(m_p_refugium_layout);
+  m_p_main_layout->addLayout(m_p_okay_button_layout);
 
   this->setLayout(m_p_main_layout);
   m_p_refugium_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
@@ -111,4 +117,17 @@ QComboBox * SettingsWindow::get_rubidium_combobox()
   return m_p_rubidium_combobox;
 }
 
+QPushButton * SettingsWindow::get_okay_button()
+{
+  return m_p_okay_button;
+}
+
+void SettingsWindow::resizeEvent(QResizeEvent * event)
+{
+  this->QWidget::resizeEvent(event);
+  QLayoutItem * item = m_p_okay_button_layout->itemAt(0);  /* spacer */
+  m_p_okay_button_layout->removeItem(item);
+  m_p_okay_button_layout->insertSpacing(0, this->size().width() / 2);
+  m_p_okay_button_layout->addWidget(m_p_okay_button);
+}
 }  // namespace reef_moonshiners::ui
