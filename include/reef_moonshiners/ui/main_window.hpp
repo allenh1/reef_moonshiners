@@ -109,14 +109,14 @@ private:
 
   QListWidget * m_p_list_widget = nullptr;
 
-  std::unordered_map<std::unique_ptr<reef_moonshiners::DailyElement>, ElementDisplay *> m_elements;
-  std::unordered_map<std::unique_ptr<reef_moonshiners::DropperElement>,
+  std::map<std::unique_ptr<reef_moonshiners::DailyElement>, ElementDisplay *> m_elements;
+  std::map<std::unique_ptr<reef_moonshiners::DropperElement>,
     ElementDisplay *> m_dropper_elements;
   reef_moonshiners::Iodine * m_p_iodine_element = nullptr;
   reef_moonshiners::Vanadium * m_p_vanadium_element = nullptr;
   std::unique_ptr<reef_moonshiners::Rubidium> m_p_rubidium_element = nullptr;
   ElementDisplay * m_p_rubidium_display = nullptr;
-  std::unordered_map<std::unique_ptr<reef_moonshiners::CorrectionElement>,
+  std::map<std::unique_ptr<reef_moonshiners::CorrectionElement>,
     ElementDisplay *> m_correction_elements;
 };
 
