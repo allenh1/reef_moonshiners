@@ -153,7 +153,7 @@ TEST(TestCorrections, test_barium_sponge)
   EXPECT_DOUBLE_EQ(element.get_concentration_estimate(now), 30);
 }
 
-TEST(TestDailies, test_ostream)
+TEST(TestCorrections, test_ostream)
 {
   const std::chrono::year_month_day now{std::chrono::floor<std::chrono::days>(
       std::chrono::system_clock::now())};
@@ -165,6 +165,8 @@ TEST(TestDailies, test_ostream)
 
   fs::path out = fs::temp_directory_path() / "out";
   std::ofstream out_file{out, std::ios::binary};
+  static constexpr size_t out_version = 3;
+  reef_moonshiners::binary_out(out_file, out_version);
   out_file << molybdenum_out << fluorine_out;
   out_file.close();
 
@@ -172,7 +174,11 @@ TEST(TestDailies, test_ostream)
   reef_moonshiners::Molybdenum molybdenum_in;
   reef_moonshiners::Fluorine fluorine_in;
   std::ifstream in_file{out, std::ios::binary};
-  in_file >> molybdenum_in >> fluorine_in;
+  size_t input_version;
+  reef_moonshiners::binary_in(in_file, input_version);
+  EXPECT_EQ(input_version, out_version);
+  reef_moonshiners::ElementBase::set_load_version(input_version);
+  in_file  >> molybdenum_in >> fluorine_in;
   EXPECT_EQ(molybdenum_in.get_name(), "Molybdenum"s);
   EXPECT_EQ(molybdenum_in.get_dose(now), molybdenum_out.get_dose(now));
   EXPECT_EQ(molybdenum_in.get_max_daily_dosage(), molybdenum_out.get_max_daily_dosage());
