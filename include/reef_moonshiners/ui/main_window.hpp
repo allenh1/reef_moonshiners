@@ -30,6 +30,7 @@
 
 #include <reef_moonshiners/elements.hpp>
 
+#include <reef_moonshiners/ui/about_window.hpp>
 #include <reef_moonshiners/ui/element_display.hpp>
 #include <reef_moonshiners/ui/settings_window.hpp>
 #include <reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp>
@@ -54,9 +55,10 @@ protected:
 
   Q_SLOT void _refresh_elements();
 
-  Q_SLOT void _activate_settings_window();
+  Q_SLOT void _activate_about_window();
   Q_SLOT void _activate_calendar_window();
   Q_SLOT void _activate_icp_import_dialog();
+  Q_SLOT void _activate_settings_window();
 
   Q_SLOT void _update_refugium_state(int state);
   Q_SLOT void _update_nano_dose_state(int state);
@@ -99,6 +101,7 @@ private:
   QAction * m_p_about_action = nullptr;
 
   SettingsWindow * m_p_settings_window = nullptr;
+  AboutWindow * m_p_about_window = nullptr;
   icp_import_dialog::IcpSelectionWindow * m_p_icp_selection_window = nullptr;
   icp_import_dialog::ATIEntryWindow * m_p_ati_entry_window = nullptr;
   icp_import_dialog::ATICorrectionStartWindow * m_p_ati_correction_start_window = nullptr;

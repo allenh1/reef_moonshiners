@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_icp_selection_window = new icp_import_dialog::IcpSelectionWindow(this);
   m_p_ati_entry_window = new icp_import_dialog::ATIEntryWindow(this);
   m_p_ati_correction_start_window = new icp_import_dialog::ATICorrectionStartWindow(this);
+  m_p_about_window = new AboutWindow(this);
 
   m_p_calendar = new QCalendarWidget(this);
   m_p_calendar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
@@ -84,6 +85,8 @@ MainWindow::MainWindow(QWidget * parent)
     m_p_calendar_action, &QAction::triggered, this, &MainWindow::_activate_calendar_window);
   QObject::connect(
     m_p_import_action, &QAction::triggered, this, &MainWindow::_activate_icp_import_dialog);
+  QObject::connect(
+    m_p_about_action, &QAction::triggered, this, &MainWindow::_activate_about_window);
   QObject::connect(
     m_p_calendar, &QCalendarWidget::selectionChanged, this, &MainWindow::_refresh_elements);
 
@@ -380,6 +383,19 @@ void MainWindow::_activate_icp_import_dialog()
   }
   m_p_active_window = m_p_active_icp_selection_window;
   m_p_active_action = m_p_import_action;
+}
+
+void MainWindow::_activate_about_window()
+{
+  /* change view to about window */
+  m_p_active_window = this->takeCentralWidget();
+  this->setCentralWidget(m_p_about_window);
+  /* grey out settings action */
+  m_p_about_action->setDisabled(true);
+  /* un-grey out the calendar widget */
+  m_p_active_action->setEnabled(true);
+  m_p_active_action = m_p_about_action;
+  m_p_active_window = m_p_about_window;
 }
 
 void MainWindow::_update_refugium_state(int state)

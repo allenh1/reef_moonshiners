@@ -47,21 +47,23 @@ target_compile_features(reef_moonshiners PUBLIC c_std_11 cxx_std_20)  # Require 
 ##
 
 set(ui_sources
+  src/about_window.cpp
+  src/main_window.cpp
   src/reef_moonshiners.cpp
   src/settings_window.cpp
-  src/main_window.cpp
   src/icp_import_dialog/ati_correction_start_window.cpp
   src/icp_import_dialog/ati_entry_window.cpp
   src/icp_import_dialog/icp_selection_window.cpp
 )
 
 set(ui_headers
-  include/reef_moonshiners/ui/main_window.hpp
+  include/reef_moonshiners/ui/about_window.hpp
   include/reef_moonshiners/ui/element_display.hpp
+  include/reef_moonshiners/ui/main_window.hpp
   include/reef_moonshiners/ui/settings_window.hpp
-  include/reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp
-  include/reef_moonshiners/ui/icp_import_dialog/ati_entry_window.hpp
   include/reef_moonshiners/ui/icp_import_dialog/ati_correction_start_window.hpp
+  include/reef_moonshiners/ui/icp_import_dialog/ati_entry_window.hpp
+  include/reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp
 )
 
 # add icon
@@ -101,6 +103,11 @@ target_compile_features(reef_moonshiners_ui PUBLIC c_std_11 cxx_std_20)  # Requi
 target_link_libraries(reef_moonshiners_ui
   reef_moonshiners ${Qt}::Widgets ${Qt}::Gui ${Qt}::Core ${Qt}::Network
 )
+
+if(${APPLE})
+  set_target_properties(reef_moonshiners_ui
+    PROPERTIES MACOSX_BUNDLE TRUE)
+endif()
 
 install(
   TARGETS reef_moonshiners
