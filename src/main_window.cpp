@@ -235,7 +235,7 @@ void MainWindow::_save()
 {
   fs::path out{
     QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString()};
-  fs::create_directory(out);  /* create if not exists */
+  fs::create_directories(out);  /* create if not exists */
   out = out / "reef_moonshiners.dat";
   std::ofstream file{out, std::ios::binary};
   binary_out(file, m_save_file_version);
