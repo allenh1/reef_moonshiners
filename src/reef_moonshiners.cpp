@@ -21,6 +21,8 @@
 int main(int argc, char ** argv)
 {
   QApplication app{argc, argv};
+  app.setOrganizationDomain("allen-software.com");
+  app.setApplicationName("Reef Moonshiners");
   reef_moonshiners::ui::MainWindow main_window;
   app.setActiveWindow(&main_window);
   main_window.show();
