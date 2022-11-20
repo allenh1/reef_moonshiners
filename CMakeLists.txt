@@ -102,6 +102,11 @@ target_link_libraries(reef_moonshiners_ui
   reef_moonshiners ${Qt}::Widgets ${Qt}::Gui ${Qt}::Core ${Qt}::Network
 )
 
+if(${APPLE})
+  set_target_properties(reef_moonshiners_ui
+    PROPERTIES MACOSX_BUNDLE TRUE)
+endif()
+
 install(
   TARGETS reef_moonshiners
   EXPORT export_reef_moonshiners
