@@ -25,6 +25,7 @@
 #include <QDockWidget>
 #include <QListWidget>
 #include <QScrollArea>
+#include <QPdfDocument>
 #include <QToolBar>
 #include <QStandardPaths>
 
@@ -36,6 +37,8 @@
 #include <reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp>
 #include <reef_moonshiners/ui/icp_import_dialog/ati_entry_window.hpp>
 #include <reef_moonshiners/ui/icp_import_dialog/ati_correction_start_window.hpp>
+#include <reef_moonshiners/ui/icp_import_dialog/oceamo_ms_entry_window.hpp>
+
 
 namespace reef_moonshiners::ui
 {
@@ -74,6 +77,10 @@ protected:
   Q_SLOT void _handle_next_ati_entry_window(const QString & text, const QDate & date);
   Q_SLOT void _handle_okay_ati_correction_start_window(const QDate & date);
   Q_SLOT void _handle_back_ati_correction_start_window();
+  Q_SLOT void _handle_back_oceamo_ms_entry_window();
+  Q_SLOT void _handle_next_oceamo_ms_entry_window(const QString & text, const QDate & date);
+  // Q_SLOT void _handle_okay_oceamo_ms_correction_start_window(const QDate & date);
+  // Q_SLOT void _handle_back_oceamo_ms_correction_start_window();
   Q_SLOT void _handle_increase_iodine();
   Q_SLOT void _handle_decrease_iodine();
   Q_SLOT void _handle_increase_vanadium();
@@ -102,9 +109,13 @@ private:
 
   SettingsWindow * m_p_settings_window = nullptr;
   AboutWindow * m_p_about_window = nullptr;
+
   icp_import_dialog::IcpSelectionWindow * m_p_icp_selection_window = nullptr;
+
   icp_import_dialog::ATIEntryWindow * m_p_ati_entry_window = nullptr;
   icp_import_dialog::ATICorrectionStartWindow * m_p_ati_correction_start_window = nullptr;
+
+  icp_import_dialog::OceamoMSEntryWindow * m_p_oceamo_ms_entry_window = nullptr;
 
   QWidget * m_p_active_window = nullptr;
   QWidget * m_p_active_icp_selection_window = nullptr;

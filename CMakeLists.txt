@@ -23,7 +23,7 @@ else()
   set(qt_wrap_cpp "qt6_wrap_cpp")
   set(qt_add_resources "qt6_add_resources")
 endif()
-set(QtComponents Widgets Core Gui Network)
+set(QtComponents Widgets Core Gui Network Pdf)
 find_package(${Qt} REQUIRED COMPONENTS ${QtComponents})
 
 set(library_sources
@@ -53,6 +53,7 @@ set(ui_sources
   src/settings_window.cpp
   src/icp_import_dialog/ati_correction_start_window.cpp
   src/icp_import_dialog/ati_entry_window.cpp
+  src/icp_import_dialog/oceamo_ms_entry_window.cpp
   src/icp_import_dialog/icp_selection_window.cpp
 )
 
@@ -63,6 +64,7 @@ set(ui_headers
   include/reef_moonshiners/ui/settings_window.hpp
   include/reef_moonshiners/ui/icp_import_dialog/ati_correction_start_window.hpp
   include/reef_moonshiners/ui/icp_import_dialog/ati_entry_window.hpp
+  include/reef_moonshiners/ui/icp_import_dialog/oceamo_ms_entry_window.hpp
   include/reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp
 )
 
@@ -101,7 +103,7 @@ target_include_directories(reef_moonshiners_ui PUBLIC
 target_compile_features(reef_moonshiners_ui PUBLIC c_std_11 cxx_std_20)  # Require C11 and C++20
 
 target_link_libraries(reef_moonshiners_ui
-  reef_moonshiners ${Qt}::Widgets ${Qt}::Gui ${Qt}::Core ${Qt}::Network
+  reef_moonshiners ${Qt}::Widgets ${Qt}::Gui ${Qt}::Core ${Qt}::Network ${Qt}::Pdf
 )
 
 if(${APPLE})

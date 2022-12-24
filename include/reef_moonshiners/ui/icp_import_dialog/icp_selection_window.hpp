@@ -26,7 +26,8 @@ namespace reef_moonshiners::ui::icp_import_dialog
 
 enum class IcpSelection : uint8_t
 {
-  ATI_ICP_OES = 0
+  ATI_ICP_OES = 0,
+  OCEAMO_ICP_MS = 1,
 };
 
 class IcpSelectionWindow : public QWidget
