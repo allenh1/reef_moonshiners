@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_icp_selection_window = new icp_import_dialog::IcpSelectionWindow(this);
   m_p_ati_entry_window = new icp_import_dialog::ATIEntryWindow(this);
   m_p_ati_correction_start_window = new icp_import_dialog::ATICorrectionStartWindow(this);
+  m_p_oceamo_ms_entry_window = new icp_import_dialog::OceamoMSEntryWindow(this);
   m_p_about_window = new AboutWindow(this);
 
   m_p_calendar = new QCalendarWidget(this);
@@ -124,8 +125,14 @@ MainWindow::MainWindow(QWidget * parent)
     m_p_ati_entry_window->get_back_button(), &QPushButton::clicked,
     this, &MainWindow::_handle_back_ati_entry_window);
   QObject::connect(
+    m_p_oceamo_ms_entry_window->get_back_button(), &QPushButton::clicked,
+    this, &MainWindow::_handle_back_oceamo_ms_entry_window);
+  QObject::connect(
     m_p_ati_entry_window, &icp_import_dialog::ATIEntryWindow::next_button_pressed,
     this, &MainWindow::_handle_next_ati_entry_window);
+  QObject::connect(
+    m_p_oceamo_ms_entry_window, &icp_import_dialog::OceamoMSEntryWindow::next_button_pressed,
+    this, &MainWindow::_handle_next_oceamo_ms_entry_window);
   QObject::connect(
     m_p_ati_correction_start_window,
     &icp_import_dialog::ATICorrectionStartWindow::okay_button_pressed,
@@ -476,12 +483,22 @@ void MainWindow::_handle_next_icp_selection_window(
       m_p_active_icp_selection_window = m_p_ati_entry_window;
       this->_activate_icp_import_dialog();
       break;
+    case IcpSelection::OCEAMO_ICP_MS:
+      m_p_active_icp_selection_window = m_p_oceamo_ms_entry_window;
+      this->_activate_icp_import_dialog();
+      break;
     default:
       exit(1);
   }
 }
 
 void MainWindow::_handle_back_ati_entry_window()
+{
+  m_p_active_icp_selection_window = m_p_icp_selection_window;
+  this->_activate_icp_import_dialog();
+}
+
+void MainWindow::_handle_back_oceamo_ms_entry_window()
 {
   m_p_active_icp_selection_window = m_p_icp_selection_window;
   this->_activate_icp_import_dialog();
@@ -590,6 +607,27 @@ void MainWindow::_handle_back_ati_correction_start_window()
 {
   m_p_active_icp_selection_window = m_p_ati_entry_window;
   this->_activate_icp_import_dialog();
+}
+
+void MainWindow::_handle_next_oceamo_ms_entry_window(const QString & text, const QDate & date)
+{
+  this->setDisabled(true);
+  QPdfDocument ms_results;
+  QPdfDocument::Error ret = ms_results.load(text);
+  if (QPdfDocument::Error::None != ret) {
+    /* error loading PDF document */
+    this->setEnabled(true);
+    m_p_oceamo_ms_entry_window->show_pdf_load_error_message(tr("failed to load pdf"), ret);
+    return;
+  } else if (ms_results.pageCount() != 3) {
+    this->setEnabled(true);
+    m_p_oceamo_ms_entry_window->show_pdf_load_error_message(tr("Unexpected page count"));
+  }
+  QString page_1 = ms_results.getAllText(0).text();
+  QString page_2 = ms_results.getAllText(1).text();
+  fprintf(stderr, "\n\n'%s'\n\n", page_1.toStdString().c_str());
+  fprintf(stderr, "\n\n'%s'\n\n", page_2.toStdString().c_str());
+  this->setEnabled(true);
 }
 
 void MainWindow::_handle_increase_iodine()
