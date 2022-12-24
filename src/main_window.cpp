@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_ati_correction_start_window = new icp_import_dialog::ATICorrectionStartWindow(this);
   m_p_oceamo_ms_entry_window = new icp_import_dialog::OceamoMSEntryWindow(this);
   m_p_about_window = new AboutWindow(this);
+  m_p_oceamo_file_browser = new QFileDialog(this);
 
   m_p_calendar = new QCalendarWidget(this);
   m_p_calendar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
@@ -133,6 +134,9 @@ MainWindow::MainWindow(QWidget * parent)
   QObject::connect(
     m_p_oceamo_ms_entry_window, &icp_import_dialog::OceamoMSEntryWindow::next_button_pressed,
     this, &MainWindow::_handle_next_oceamo_ms_entry_window);
+  QObject::connect(
+    m_p_oceamo_file_browser, &QFileDialog::fileSelected,
+    this, &MainWindow::_handle_oceamo_ms_analysis_selected);
   QObject::connect(
     m_p_ati_correction_start_window,
     &icp_import_dialog::ATICorrectionStartWindow::okay_button_pressed,
@@ -374,6 +378,14 @@ void MainWindow::_activate_calendar_window()
   _refresh_elements();
 }
 
+void MainWindow::_activate_oceamo_file_browser()
+{
+  /* change view to file dialog */
+  m_p_active_window = this->takeCentralWidget();
+  this->setCentralWidget(m_p_oceamo_file_browser);
+  m_p_active_window = m_p_oceamo_file_browser;
+}
+
 void MainWindow::_activate_icp_import_dialog()
 {
   /* change view to ICP window */
@@ -609,11 +621,17 @@ void MainWindow::_handle_back_ati_correction_start_window()
   this->_activate_icp_import_dialog();
 }
 
-void MainWindow::_handle_next_oceamo_ms_entry_window(const QString & text, const QDate & date)
+void MainWindow::_handle_next_oceamo_ms_entry_window(const QDate & date)
+{
+  m_oceamo_sample_date = date;
+  this->_activate_oceamo_file_browser();
+}
+
+void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
 {
   this->setDisabled(true);
   QPdfDocument ms_results;
-  QPdfDocument::Error ret = ms_results.load(text);
+  QPdfDocument::Error ret = ms_results.load(file);
   if (QPdfDocument::Error::None != ret) {
     /* error loading PDF document */
     this->setEnabled(true);

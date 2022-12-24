@@ -62,6 +62,7 @@ protected:
   Q_SLOT void _activate_calendar_window();
   Q_SLOT void _activate_icp_import_dialog();
   Q_SLOT void _activate_settings_window();
+  Q_SLOT void _activate_oceamo_file_browser();
 
   Q_SLOT void _update_refugium_state(int state);
   Q_SLOT void _update_nano_dose_state(int state);
@@ -78,7 +79,8 @@ protected:
   Q_SLOT void _handle_okay_ati_correction_start_window(const QDate & date);
   Q_SLOT void _handle_back_ati_correction_start_window();
   Q_SLOT void _handle_back_oceamo_ms_entry_window();
-  Q_SLOT void _handle_next_oceamo_ms_entry_window(const QString & text, const QDate & date);
+  Q_SLOT void _handle_next_oceamo_ms_entry_window(const QDate & date);
+  Q_SLOT void _handle_oceamo_ms_analysis_selected(const QString & file);
   // Q_SLOT void _handle_okay_oceamo_ms_correction_start_window(const QDate & date);
   // Q_SLOT void _handle_back_oceamo_ms_correction_start_window();
   Q_SLOT void _handle_increase_iodine();
@@ -107,6 +109,8 @@ private:
   QAction * m_p_calendar_action = nullptr;
   QAction * m_p_about_action = nullptr;
 
+  QFileDialog * m_p_oceamo_file_browser = nullptr;
+
   SettingsWindow * m_p_settings_window = nullptr;
   AboutWindow * m_p_about_window = nullptr;
 
@@ -122,6 +126,8 @@ private:
   QAction * m_p_active_action = nullptr;
 
   QListWidget * m_p_list_widget = nullptr;
+
+  QDate m_oceamo_sample_date;
 
   std::map<std::unique_ptr<reef_moonshiners::DailyElement>, ElementDisplay *> m_elements;
   std::map<std::unique_ptr<reef_moonshiners::DropperElement>,

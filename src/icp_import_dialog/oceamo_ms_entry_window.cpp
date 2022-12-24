@@ -46,18 +46,7 @@ OceamoMSEntryWindow::OceamoMSEntryWindow(QWidget * parent)
   QObject::connect(
     m_p_next_button, &QPushButton::clicked,
     [this, parent]() {
-      /* open file dialog */
-      QFileDialog * dialog = new QFileDialog(parent);
-      reinterpret_cast<QMainWindow *>(parent)->setCentralWidget(dialog);
-      QObject::connect(
-        dialog, &QFileDialog::fileSelected,
-        [this, parent](const QString & file) {
-          m_ms_analysis_file = file;
-          fprintf(stderr, "selected file: '%s'\n", file.toStdString().c_str());
-          reinterpret_cast<QMainWindow *>(parent)->takeCentralWidget();
-          reinterpret_cast<QMainWindow *>(parent)->setCentralWidget(this);
-          Q_EMIT (next_button_pressed(m_ms_analysis_file, m_p_calendar_widget->selectedDate()));
-        });
+      Q_EMIT (next_button_pressed(m_p_calendar_widget->selectedDate()));
     });
 }
 
