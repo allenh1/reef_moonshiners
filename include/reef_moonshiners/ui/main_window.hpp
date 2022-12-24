@@ -93,7 +93,7 @@ protected:
   bool _load();
 
 private:
-  constexpr static size_t m_save_file_version = 3;  /* increment when changes happen to the format */
+  constexpr static size_t m_save_file_version = 4;  /* increment when changes happen to the format */
   int m_refugium_state = Qt::Unchecked;
   int m_nano_dose_state = Qt::Unchecked;
 

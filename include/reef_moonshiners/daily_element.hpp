@@ -45,6 +45,10 @@ public:
 
   void apply_dose(const double, const std::chrono::year_month_day & _date) override;
 
+  void set_use_ms_mode(const bool _use_ms_mode);
+
+  bool get_use_ms_mode() const;
+
   void write_to(std::ostream & stream) const override;
 
   void read_from(std::istream & stream) override;
@@ -53,6 +57,7 @@ private:
   double m_multiplier = 1.0;
   double m_nano_concentration = 0.0;
   bool m_use_nano_dose = false;
+  bool m_use_ms_mode = false;
 };
 
 #define DAILY_ELEMENT(name, element_concentration, nano_element_concentration, target_concentration, \

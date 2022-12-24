@@ -640,11 +640,66 @@ void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
   } else if (ms_results.pageCount() != 3) {
     this->setEnabled(true);
     m_p_oceamo_ms_entry_window->show_pdf_load_error_message(tr("Unexpected page count"));
+    return;
   }
   QString page_1 = ms_results.getAllText(0).text();
   QString page_2 = ms_results.getAllText(1).text();
-  fprintf(stderr, "\n\n'%s'\n\n", page_1.toStdString().c_str());
-  fprintf(stderr, "\n\n'%s'\n\n", page_2.toStdString().c_str());
+  QRegularExpression re_ug_l{"(\\w+) (\\d+,?\\d*).*µg/l"};
+  QRegularExpression re_mg_l{"(\\w+) (\\d+,?\\d*).*mg/l"};
+  QRegularExpression re_date_sample{"Date of Sampling: (\\d+)\.(\\d+)\.(\\d+)"};
+  int day = -1;
+  int month;
+  int year;
+  std::unordered_map<std::string, double> element_concentration_map;
+  for (const auto & line : page_1.split('\n')) {
+    if (auto match = re_ug_l.match(line); match.hasMatch()) {
+      QString element = match.captured(1);
+      double concentration = match.captured(2).replace(',', '.').toDouble();
+      element_concentration_map[element.toStdString()] = concentration;
+    } else if (auto match = re_mg_l.match(line); match.hasMatch()) {
+      QString element = match.captured(1);
+      double concentration = match.captured(2).replace(',', '.').toDouble();
+      element_concentration_map[element.toStdString()] = concentration * 1E3;
+    } else if (auto match = re_date_sample.match(line); match.hasMatch()) {
+      day = match.captured(1).toInt();
+      month = match.captured(2).toInt();
+      year = match.captured(3).toInt();
+    }
+  }
+  for (const auto & line : page_2.split('\n')) {
+    if (auto match = re_ug_l.match(line); match.hasMatch()) {
+      QString element = match.captured(1);
+      double concentration = match.captured(2).replace(',', '.').toDouble();
+      element_concentration_map[element.toStdString()] = concentration;
+    } else if (auto match = re_mg_l.match(line); match.hasMatch()) {
+      QString element = match.captured(1);
+      double concentration = match.captured(2).replace(',', '.').toDouble();
+      element_concentration_map[element.toStdString()] = concentration * 1E3;
+    }
+  }
+  const std::chrono::year_month_day date_of_sample{
+    std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
+  for (auto &[element, display] : m_correction_elements) {
+    /* set concentration */
+    element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
+  }
+  for (auto &[element, display] : m_dropper_elements) {
+    /* set concentration */
+    element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
+  }
+  for (auto &[element, display] : m_elements) {
+    /* set concentration */
+    element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
+    element->set_use_ms_mode(true);
+  }
+  /* handle iodine */
+  m_p_active_icp_selection_window = m_p_ati_correction_start_window;
+  m_p_ati_correction_start_window->set_iodine_increase(m_p_iodine_element->is_low());
+  m_p_ati_correction_start_window->set_iodine_decrease(m_p_iodine_element->is_high());
+  m_p_ati_correction_start_window->set_vanadium_increase(m_p_vanadium_element->is_low());
+  m_p_ati_correction_start_window->set_vanadium_decrease(m_p_vanadium_element->is_high());
+  this->setEnabled(true);
+  this->_activate_icp_import_dialog();
   this->setEnabled(true);
 }
 
