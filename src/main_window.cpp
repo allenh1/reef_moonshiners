@@ -691,6 +691,7 @@ void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
     /* set concentration */
     element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
     element->set_use_ms_mode(true);
+    fprintf(stderr, "'%s': dose '%lf' mL (current concentration: '%lf' ug / L, target: '%lf' ug / L)\n", element->get_name().c_str(), element->get_dose(date_of_sample), element->get_current_concentration_estimate(), element->get_target_concentration());
   }
   /* handle iodine */
   m_p_active_icp_selection_window = m_p_ati_correction_start_window;
@@ -700,7 +701,6 @@ void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
   m_p_ati_correction_start_window->set_vanadium_decrease(m_p_vanadium_element->is_high());
   this->setEnabled(true);
   this->_activate_icp_import_dialog();
-  this->setEnabled(true);
 }
 
 void MainWindow::_handle_increase_iodine()

@@ -103,6 +103,8 @@ void DailyElement::write_to(std::ostream & stream) const
   binary_out(stream, m_multiplier);
   int as_int = m_use_nano_dose;
   binary_out(stream, (int)as_int);
+  as_int = m_use_ms_mode;
+  binary_out(stream, (int)as_int);
 }
 
 void DailyElement::read_from(std::istream & stream)
@@ -115,7 +117,7 @@ void DailyElement::read_from(std::istream & stream)
     m_use_nano_dose = nano_dose;
   }
   if (reef_moonshiners::ElementBase::m_load_version >= 4) {
-    bool use_ms_mode;
+    int use_ms_mode;
     binary_in(stream, use_ms_mode);
     m_use_ms_mode = use_ms_mode;
   }
