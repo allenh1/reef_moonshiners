@@ -22,8 +22,11 @@ namespace reef_moonshiners
 DailyElement::DailyElement(
   const std::string & _name, const double _element_concentration,
   const double _nano_element_concentration,
-  const double _target_concentration, const double _max_adjustment)
-: ElementBase(_name, _element_concentration, _target_concentration, _max_adjustment),
+  const double _target_concentration_low,
+  const double _target_concentration_high,
+  const double _base_adjustment,
+  const double _max_adjustment)
+: ElementBase(_name, _element_concentration, _target_concentration, const double _max_adjustment),
   m_nano_concentration(_nano_element_concentration)
 {
 }

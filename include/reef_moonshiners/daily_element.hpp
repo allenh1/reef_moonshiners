@@ -26,7 +26,10 @@ public:
   explicit DailyElement(
     const std::string & _name, const double _element_concentration,
     const double _nano_element_concentration,
-    const double _target_concentration, const double _max_adjustment);
+    const double _target_concentration_low,
+    const double _target_concentration_high,
+    const double _max_adjustment,
+    const double _base_adjustment);
   ~DailyElement() override = default;
 
   double get_dose(const std::chrono::year_month_day &) const override;
@@ -56,16 +59,20 @@ public:
 private:
   double m_multiplier = 1.0;
   double m_nano_concentration = 0.0;
+  double m_base_adjustment = 0.0;
+  /* these provide a range for the concentration to fall within */
+  double m_target_concentration_low = 0.0;
+  double m_target_concentration_high = 0.0;
   bool m_use_nano_dose = false;
   bool m_use_ms_mode = false;
 };
 
 #define DAILY_ELEMENT(name, element_concentration, nano_element_concentration, target_concentration, \
-    max_adjustment) \
+    base_adjustment) \
   struct name : public DailyElement { \
     name() : DailyElement( \
-        #name, (element_concentration), (nano_element_concentration), (target_concentration), \
-        (max_adjustment)) {} }
+        #name, (element_concentration), (nano_element_concentration), (target_concentration_low), \
+        (target_concentration_high), (base_adjustment), (1.0)) {} }
 }  // namespace reef_moonshiners
 
 #endif  // REEF_MOONSHINERS__DAILY_ELEMENT_HPP_
