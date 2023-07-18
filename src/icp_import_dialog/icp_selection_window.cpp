@@ -39,6 +39,7 @@ IcpSelectionWindow::IcpSelectionWindow(QWidget * parent)
 
   /* Add ATI ICP as an option, more to come :) */
   m_p_combo_box->insertItem(0, "ATI ICP-OES");
+  m_p_combo_box->insertItem(1, "Oceamo ICP-MS");
 
   this->setLayout(m_p_main_layout);
 

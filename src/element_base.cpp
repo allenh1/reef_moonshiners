@@ -90,6 +90,7 @@ std::string ElementBase::get_dosing_unit_str() const
     case DosingUnit::DROPS:
       return "drops"s;
   }
+  return "???"s;
 }
 
 const std::chrono::year_month_day & ElementBase::get_last_measurement_date() const

@@ -33,11 +33,12 @@ CORRECTION_ELEMENT(Zinc, 1000E3, 5.0, 2.0);
 CORRECTION_ELEMENT(Strontium, 54000E3, 10E3, 1E3);
 CORRECTION_ELEMENT(Potassium, 49000E3, 410E3, 20E3);
 
-DAILY_ELEMENT(Manganese, 100E3, 37.85E3, 0.1, 1.0);
-DAILY_ELEMENT(Chromium, 100E3, 7.57E3, 0.02, 0.1);
-DAILY_ELEMENT(Selenium, 100E3, 7.57E3, 0.02, 0.1);
-DAILY_ELEMENT(Cobalt, 101E3, 7.57E3, 0.02, 0.1);
-DAILY_ELEMENT(Iron, 108E3, 3.788E3, 0.01, 0.1);
+/* Name, element concentration, nano concentration, target concentration low, target concentration high, base adjustment */
+DAILY_ELEMENT(Manganese, 100E3, 37.85E3, 0.26, 0.6, 0.1);
+DAILY_ELEMENT(Chromium, 100E3, 7.57E3, 0.36, 0.55, 0.02);
+DAILY_ELEMENT(Selenium, 100E3, 7.57E3, 0.35, 0.55, 0.02);
+DAILY_ELEMENT(Cobalt, 101E3, 7.57E3, 0.51, 0.8, 0.02);
+DAILY_ELEMENT(Iron, 108E3, 3.788E3, 0.71, 1.0, 0.01);
 
 DROPPER_ELEMENT(Iodine, 75.0, 95.0);
 DROPPER_ELEMENT(Vanadium, 1.0, 2.0);

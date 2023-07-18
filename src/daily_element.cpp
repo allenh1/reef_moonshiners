@@ -22,8 +22,11 @@ namespace reef_moonshiners
 DailyElement::DailyElement(
   const std::string & _name, const double _element_concentration,
   const double _nano_element_concentration,
-  const double _target_concentration, const double _max_adjustment)
-: ElementBase(_name, _element_concentration, _target_concentration, _max_adjustment),
+  const double _target_concentration_low,
+  const double _target_concentration_high,
+  const double _base_adjustment,
+  const double _max_adjustment)
+: ElementBase(_name, _element_concentration, _target_concentration, const double _max_adjustment),
   m_nano_concentration(_nano_element_concentration)
 {
 }
@@ -87,11 +90,23 @@ void DailyElement::set_use_nano_dose(const bool _use_nano_dose)
   m_use_nano_dose = _use_nano_dose;
 }
 
+void DailyElement::set_use_ms_mode(const bool _use_ms_mode)
+{
+  m_use_ms_mode = _use_ms_mode;
+}
+
+bool DailyElement::get_use_ms_mode() const
+{
+  return m_use_ms_mode;
+}
+
 void DailyElement::write_to(std::ostream & stream) const
 {
   this->ElementBase::write_to(stream);
   binary_out(stream, m_multiplier);
   int as_int = m_use_nano_dose;
+  binary_out(stream, (int)as_int);
+  as_int = m_use_ms_mode;
   binary_out(stream, (int)as_int);
 }
 
@@ -103,6 +118,11 @@ void DailyElement::read_from(std::istream & stream)
     int nano_dose;
     binary_in(stream, nano_dose);
     m_use_nano_dose = nano_dose;
+  }
+  if (reef_moonshiners::ElementBase::m_load_version >= 4) {
+    int use_ms_mode;
+    binary_in(stream, use_ms_mode);
+    m_use_ms_mode = use_ms_mode;
   }
 }
 

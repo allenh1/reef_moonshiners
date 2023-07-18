@@ -50,7 +50,9 @@ MainWindow::MainWindow(QWidget * parent)
   m_p_icp_selection_window = new icp_import_dialog::IcpSelectionWindow(this);
   m_p_ati_entry_window = new icp_import_dialog::ATIEntryWindow(this);
   m_p_ati_correction_start_window = new icp_import_dialog::ATICorrectionStartWindow(this);
+  m_p_oceamo_ms_entry_window = new icp_import_dialog::OceamoMSEntryWindow(this);
   m_p_about_window = new AboutWindow(this);
+  m_p_oceamo_file_browser = new QFileDialog(this);
 
   m_p_calendar = new QCalendarWidget(this);
   m_p_calendar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
@@ -124,8 +126,17 @@ MainWindow::MainWindow(QWidget * parent)
     m_p_ati_entry_window->get_back_button(), &QPushButton::clicked,
     this, &MainWindow::_handle_back_ati_entry_window);
   QObject::connect(
+    m_p_oceamo_ms_entry_window->get_back_button(), &QPushButton::clicked,
+    this, &MainWindow::_handle_back_oceamo_ms_entry_window);
+  QObject::connect(
     m_p_ati_entry_window, &icp_import_dialog::ATIEntryWindow::next_button_pressed,
     this, &MainWindow::_handle_next_ati_entry_window);
+  QObject::connect(
+    m_p_oceamo_ms_entry_window, &icp_import_dialog::OceamoMSEntryWindow::next_button_pressed,
+    this, &MainWindow::_handle_next_oceamo_ms_entry_window);
+  QObject::connect(
+    m_p_oceamo_file_browser, &QFileDialog::fileSelected,
+    this, &MainWindow::_handle_oceamo_ms_analysis_selected);
   QObject::connect(
     m_p_ati_correction_start_window,
     &icp_import_dialog::ATICorrectionStartWindow::okay_button_pressed,
@@ -367,6 +378,14 @@ void MainWindow::_activate_calendar_window()
   _refresh_elements();
 }
 
+void MainWindow::_activate_oceamo_file_browser()
+{
+  /* change view to file dialog */
+  m_p_active_window = this->takeCentralWidget();
+  this->setCentralWidget(m_p_oceamo_file_browser);
+  m_p_active_window = m_p_oceamo_file_browser;
+}
+
 void MainWindow::_activate_icp_import_dialog()
 {
   /* change view to ICP window */
@@ -476,12 +495,22 @@ void MainWindow::_handle_next_icp_selection_window(
       m_p_active_icp_selection_window = m_p_ati_entry_window;
       this->_activate_icp_import_dialog();
       break;
+    case IcpSelection::OCEAMO_ICP_MS:
+      m_p_active_icp_selection_window = m_p_oceamo_ms_entry_window;
+      this->_activate_icp_import_dialog();
+      break;
     default:
       exit(1);
   }
 }
 
 void MainWindow::_handle_back_ati_entry_window()
+{
+  m_p_active_icp_selection_window = m_p_icp_selection_window;
+  this->_activate_icp_import_dialog();
+}
+
+void MainWindow::_handle_back_oceamo_ms_entry_window()
 {
   m_p_active_icp_selection_window = m_p_icp_selection_window;
   this->_activate_icp_import_dialog();
@@ -589,6 +618,88 @@ void MainWindow::_handle_okay_ati_correction_start_window(const QDate & date)
 void MainWindow::_handle_back_ati_correction_start_window()
 {
   m_p_active_icp_selection_window = m_p_ati_entry_window;
+  this->_activate_icp_import_dialog();
+}
+
+void MainWindow::_handle_next_oceamo_ms_entry_window(const QDate & date)
+{
+  m_oceamo_sample_date = date;
+  this->_activate_oceamo_file_browser();
+}
+
+void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
+{
+  this->setDisabled(true);
+  QPdfDocument ms_results;
+  QPdfDocument::Error ret = ms_results.load(file);
+  if (QPdfDocument::Error::None != ret) {
+    /* error loading PDF document */
+    this->setEnabled(true);
+    m_p_oceamo_ms_entry_window->show_pdf_load_error_message(tr("failed to load pdf"), ret);
+    return;
+  } else if (ms_results.pageCount() != 3) {
+    this->setEnabled(true);
+    m_p_oceamo_ms_entry_window->show_pdf_load_error_message(tr("Unexpected page count"));
+    return;
+  }
+  QString page_1 = ms_results.getAllText(0).text();
+  QString page_2 = ms_results.getAllText(1).text();
+  QRegularExpression re_ug_l{"(\\w+) (\\d+,?\\d*).*µg/l"};
+  QRegularExpression re_mg_l{"(\\w+) (\\d+,?\\d*).*mg/l"};
+  QRegularExpression re_date_sample{"Date of Sampling: (\\d+)\.(\\d+)\.(\\d+)"};
+  int day = -1;
+  int month;
+  int year;
+  std::unordered_map<std::string, double> element_concentration_map;
+  for (const auto & line : page_1.split('\n')) {
+    if (auto match = re_ug_l.match(line); match.hasMatch()) {
+      QString element = match.captured(1);
+      double concentration = match.captured(2).replace(',', '.').toDouble();
+      element_concentration_map[element.toStdString()] = concentration;
+    } else if (auto match = re_mg_l.match(line); match.hasMatch()) {
+      QString element = match.captured(1);
+      double concentration = match.captured(2).replace(',', '.').toDouble();
+      element_concentration_map[element.toStdString()] = concentration * 1E3;
+    } else if (auto match = re_date_sample.match(line); match.hasMatch()) {
+      day = match.captured(1).toInt();
+      month = match.captured(2).toInt();
+      year = match.captured(3).toInt();
+    }
+  }
+  for (const auto & line : page_2.split('\n')) {
+    if (auto match = re_ug_l.match(line); match.hasMatch()) {
+      QString element = match.captured(1);
+      double concentration = match.captured(2).replace(',', '.').toDouble();
+      element_concentration_map[element.toStdString()] = concentration;
+    } else if (auto match = re_mg_l.match(line); match.hasMatch()) {
+      QString element = match.captured(1);
+      double concentration = match.captured(2).replace(',', '.').toDouble();
+      element_concentration_map[element.toStdString()] = concentration * 1E3;
+    }
+  }
+  const std::chrono::year_month_day date_of_sample{
+    std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
+  for (auto &[element, display] : m_correction_elements) {
+    /* set concentration */
+    element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
+  }
+  for (auto &[element, display] : m_dropper_elements) {
+    /* set concentration */
+    element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
+  }
+  for (auto &[element, display] : m_elements) {
+    /* set concentration */
+    element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
+    element->set_use_ms_mode(true);
+    fprintf(stderr, "'%s': dose '%lf' mL (current concentration: '%lf' ug / L, target: '%lf' ug / L)\n", element->get_name().c_str(), element->get_dose(date_of_sample), element->get_current_concentration_estimate(), element->get_target_concentration());
+  }
+  /* handle iodine */
+  m_p_active_icp_selection_window = m_p_ati_correction_start_window;
+  m_p_ati_correction_start_window->set_iodine_increase(m_p_iodine_element->is_low());
+  m_p_ati_correction_start_window->set_iodine_decrease(m_p_iodine_element->is_high());
+  m_p_ati_correction_start_window->set_vanadium_increase(m_p_vanadium_element->is_low());
+  m_p_ati_correction_start_window->set_vanadium_decrease(m_p_vanadium_element->is_high());
+  this->setEnabled(true);
   this->_activate_icp_import_dialog();
 }
 

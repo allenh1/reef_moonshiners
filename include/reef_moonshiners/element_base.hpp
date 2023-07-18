@@ -22,109 +22,10 @@
 #include <ostream>
 #include <istream>
 
+#include <reef_moonshiners/utils.hpp>
+
 namespace reef_moonshiners
 {
-
-template<size_t places>
-inline double round_places(const double d)
-{
-  return round_places<places - 1>(d * 10) / 10;
-}
-
-template<>
-inline double round_places<1>(const double d)
-{
-  return std::ceil(d * 10) / 10;
-}
-
-template<>
-inline double round_places<0>(const double d)
-{
-  return std::round(d);
-}
-
-template<size_t places>
-inline double truncate_places(const double d)
-{
-  return truncate_places<places - 1>(d * 10) / 10;
-}
-
-template<>
-inline double truncate_places<1>(const double d)
-{
-  return std::floor(d * 10) / 10;
-}
-
-inline double gallons_to_liters(const double gallons)
-{
-  return gallons * 3.78541;
-}
-
-inline double liters_to_gallons(const double liters)
-{
-  return liters / 3.78541;
-}
-
-template<typename T>
-inline void binary_out(std::ostream & stream, const T & obj)
-{
-  stream.write(
-    reinterpret_cast<const char *>(&obj),
-    sizeof(obj));
-}
-
-template<>
-inline void binary_out<std::string>(std::ostream & stream, const std::string & obj)
-{
-  const size_t len = obj.size();
-  stream.write(reinterpret_cast<const char *>(&len), sizeof(len));
-  stream.write(obj.c_str(), len);
-}
-
-template<typename K, typename V>
-inline void binary_out(std::ostream & stream, const std::unordered_map<K, V> & obj)
-{
-  const size_t len = obj.size();
-  stream.write(reinterpret_cast<const char *>(&len), sizeof(len));
-  for (const auto &[key, value] : obj) {
-    binary_out(stream, key);
-    binary_out(stream, value);
-  }
-}
-
-template<typename T>
-inline void binary_in(std::istream & stream, T & obj)
-{
-  stream.read(
-    reinterpret_cast<char *>(&obj),
-    sizeof(obj));
-}
-
-template<>
-inline void binary_in<std::string>(std::istream & stream, std::string & obj)
-{
-  size_t len;
-  stream.read(reinterpret_cast<char *>(&len), sizeof(len));
-  char * str_in = reinterpret_cast<char *>(calloc(len + 1, sizeof(*str_in)));
-  stream.read(str_in, len);
-  obj = std::string(str_in);
-  free(str_in);
-}
-
-template<typename K, typename V>
-inline void binary_in(std::istream & stream, std::unordered_map<K, V> & obj)
-{
-  size_t len;
-  binary_in(stream, len);
-
-  K key;
-  V value;
-  for (; len-- > 0; ) {
-    binary_in(stream, key);
-    binary_in(stream, value);
-    obj[key] = value;
-  }
-}
 
 enum class DosingUnit : uint8_t
 {
@@ -146,6 +47,7 @@ public:
   explicit ElementBase(
     const std::string & _name, const double _element_concentration,
     const double _target_concentration, const double _max_adjustment);
+
   virtual ~ElementBase() = default;
 
   /**
