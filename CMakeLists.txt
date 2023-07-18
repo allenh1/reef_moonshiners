@@ -33,6 +33,7 @@ set(library_sources
   src/dropper_element.cpp
   src/barium_element.cpp
   src/rubidium_element.cpp
+  src/element_container.cpp
 )
 
 add_library(reef_moonshiners ${library_sources})
