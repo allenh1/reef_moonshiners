@@ -174,62 +174,44 @@ void MainWindow::_fill_element_list()
 {
   /* daily elements */
 
-  auto manganese = std::make_unique<reef_moonshiners::Manganese>();
-  m_elements.emplace(std::move(manganese), new ElementDisplay(manganese.get(), m_p_list_widget));
-  auto chromium = std::make_unique<reef_moonshiners::Chromium>();
-  m_elements.emplace(std::move(chromium), new ElementDisplay(chromium.get(), m_p_list_widget));
-  auto selenium = std::make_unique<reef_moonshiners::Selenium>();
-  m_elements.emplace(std::move(selenium), new ElementDisplay(selenium.get(), m_p_list_widget));
-  auto cobalt = std::make_unique<reef_moonshiners::Cobalt>();
-  m_elements.emplace(std::move(cobalt), new ElementDisplay(cobalt.get(), m_p_list_widget));
-  auto iron = std::make_unique<reef_moonshiners::Iron>();
-  m_elements.emplace(std::move(iron), new ElementDisplay(iron.get(), m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Manganese"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Chromium"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Selenium"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Cobalt"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Iron"], m_p_list_widget));
 
   /* rubidium */
 
-  m_p_rubidium_element = std::make_unique<reef_moonshiners::Rubidium>();
-  m_p_rubidium_display = new ElementDisplay(m_p_rubidium_element.get(), m_p_list_widget);
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Rubidium"], m_p_list_widget));
 
   /* dropper elements */
 
-  auto iodine = std::make_unique<reef_moonshiners::Iodine>();
-  m_p_iodine_element = iodine.get();
-  m_dropper_elements.emplace(std::move(iodine), new ElementDisplay(iodine.get(), m_p_list_widget));
-  auto vanadium = std::make_unique<reef_moonshiners::Vanadium>();
-  m_p_vanadium_element = vanadium.get();
-  m_dropper_elements.emplace(
-    std::move(vanadium), new ElementDisplay(
-      vanadium.get(), m_p_list_widget));
+  m_elements.emplace(new ElementDisplay(m_element_container["Iodine"], m_p_list_widget));
+  m_elements.emplace(new ElementDisplay(m_element_container["Vanadium"], m_p_list_widget));
 
   /* corrections */
-  auto fluorine = std::make_unique<reef_moonshiners::Fluorine>();
-  m_correction_elements.emplace(
-    std::move(fluorine),
-    new ElementDisplay(fluorine.get(), m_p_list_widget));
-  auto bromine = std::make_unique<reef_moonshiners::Bromine>();
-  m_correction_elements.emplace(
-    std::move(bromine),
-    new ElementDisplay(bromine.get(), m_p_list_widget));
-  auto nickel = std::make_unique<reef_moonshiners::Nickel>();
-  m_correction_elements.emplace(
-    std::move(nickel),
-    new ElementDisplay(nickel.get(), m_p_list_widget));
-  auto zinc = std::make_unique<reef_moonshiners::Zinc>();
-  m_correction_elements.emplace(std::move(zinc), new ElementDisplay(zinc.get(), m_p_list_widget));
-  auto barium = std::make_unique<reef_moonshiners::Barium>();
-  m_correction_elements.emplace(
-    std::move(barium),
-    new ElementDisplay(barium.get(), m_p_list_widget));
-  auto boron = std::make_unique<reef_moonshiners::Boron>();
-  m_correction_elements.emplace(std::move(boron), new ElementDisplay(boron.get(), m_p_list_widget));
-  auto strontium = std::make_unique<reef_moonshiners::Strontium>();
-  m_correction_elements.emplace(
-    std::move(strontium),
-    new ElementDisplay(strontium.get(), m_p_list_widget));
-  auto potassium = std::make_unique<reef_moonshiners::Potassium>();
-  m_correction_elements.emplace(
-    std::move(potassium),
-    new ElementDisplay(potassium.get(), m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Fluorine"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Bromine"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Nickel"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Zinc"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Boron"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Barium"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Potassium"], m_p_list_widget));
+  m_elements.emplace(
+    new ElementDisplay(m_element_container["Strontium"], m_p_list_widget));
 }
 
 void MainWindow::_handle_item_clicked(QListWidgetItem * p_item)
@@ -256,19 +238,7 @@ void MainWindow::_save()
   binary_out(file, reef_moonshiners::ElementBase::get_tank_size());
   binary_out(file, m_refugium_state);
   binary_out(file, m_nano_dose_state);
-  for (const auto & [daily, display] : m_elements) {
-    (void)display;
-    file << *daily;
-  }
-  for (const auto & [daily, display] : m_dropper_elements) {
-    (void)display;
-    file << *daily;
-  }
-  file << *m_p_rubidium_element;
-  for (const auto & [correction, display] : m_correction_elements) {
-    (void)display;
-    file << *correction;
-  }
+  file << m_element_container;
 }
 
 bool MainWindow::_load()
@@ -276,8 +246,8 @@ bool MainWindow::_load()
   fs::path dir{QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString()};
   fs::path in = dir / "reef_moonshiners.dat";
   if (!fs::exists(in)) {
-    m_p_vanadium_element->set_drops(1);
-    m_p_iodine_element->set_drops(2);
+    m_element_container.vanadium()->set_drops(1);
+    m_element_container.iodine()->set_drops(2);
     return false;  /* this will be created after we save */
   }
   std::ifstream file{in, std::ios::binary};
@@ -298,56 +268,34 @@ bool MainWindow::_load()
   m_p_settings_window->get_tank_size_edit()->setText(QString().setNum(gallons));
   binary_in(file, m_refugium_state);
   m_p_settings_window->get_refugium_checkbox()->setCheckState(Qt::CheckState(m_refugium_state));
-  if (save_file_version >= 3) {
-    binary_in(file, m_nano_dose_state);
+  if (save_file_version < 5) {
+    /* TODO(allenh1): report as unsupported, warn for data loss */
+    _fill_element_list();
+    return false;
   }
   m_p_settings_window->get_nano_dose_checkbox()->setCheckState(Qt::CheckState(m_nano_dose_state));
-  for (auto & [daily, display] : m_elements) {
-    (void)display;
-    file >> *daily;
-  }
-  /* load dropper elements */
-  if (save_file_version >= 1) {
-    for (auto & [daily, display] : m_dropper_elements) {
-      (void)display;
-      file >> *daily;
-    }
-  } else {
-    m_p_vanadium_element->set_drops(1);
-    m_p_iodine_element->set_drops(2);
-  }
-  /* load rubidium */
-  if (save_file_version >= 2) {
-    file >> *m_p_rubidium_element;
-  }
+  file >> m_element_container;
+
+  _fill_element_list();
+
   m_p_settings_window->get_iodine_spinbox()->setValue(
-    (int)m_p_iodine_element->get_dose(std::chrono::year_month_day{}));
+    (int)m_element_container.iodine()->get_dose(std::chrono::year_month_day{}));
   m_p_settings_window->get_vanadium_spinbox()->setValue(
-    (int)m_p_vanadium_element->get_dose(std::chrono::year_month_day{}));
-  const auto date = m_p_rubidium_element->get_initial_dose_date();
+    (int)m_element_container.vanadium()->get_dose(std::chrono::year_month_day{}));
+  const auto date =
+    m_element_container.rubidium()->get_initial_dose_date();
   m_p_settings_window->get_rubidium_start_dateedit()->setDate(
     QDate((int)date.year(), (unsigned)date.month(), (unsigned)date.day()));
   m_p_settings_window->get_rubidium_combobox()->setCurrentIndex(
-    (uint8_t)m_p_rubidium_element->get_dosing_frequency());
-  for (auto & [correction, display] : m_correction_elements) {
-    (void)display;
-    file >> *correction;
-  }
+    (uint8_t)m_element_container.rubidium()->get_dosing_frequency());
   return true;
 }
 
 void MainWindow::_refresh_elements()
 {
-  for (auto &[element, display] : m_correction_elements) {
+  for (auto & display : m_elements) {
     display->update_dosage(m_p_calendar->selectedDate());
   }
-  for (auto &[element, display] : m_elements) {
-    display->update_dosage(m_p_calendar->selectedDate());
-  }
-  for (auto &[element, display] : m_dropper_elements) {
-    display->update_dosage(m_p_calendar->selectedDate());
-  }
-  m_p_rubidium_display->update_dosage(m_p_calendar->selectedDate());
   _save();
 }
 
@@ -420,11 +368,11 @@ void MainWindow::_activate_about_window()
 void MainWindow::_update_refugium_state(int state)
 {
   if (Qt::Checked == state) {
-    for (const auto & [element, display] : m_elements) {
+    for (auto & element : m_element_container.get_dailies()) {
       element->set_multiplier(2.0);  /* this doubles the daily dose */
     }
   } else if (Qt::Unchecked == state) {
-    for (const auto & [element, display] : m_elements) {
+    for (auto & element : m_element_container.get_dailies()) {
       element->set_multiplier(1.0);
     }
   }
@@ -435,11 +383,11 @@ void MainWindow::_update_refugium_state(int state)
 void MainWindow::_update_nano_dose_state(int state)
 {
   if (Qt::Checked == state) {
-    for (const auto & [element, display] : m_elements) {
+    for (auto & element : m_element_container.get_dailies()) {
       element->set_use_nano_dose(true);  /* this doubles the daily dose */
     }
   } else if (Qt::Unchecked == state) {
-    for (const auto & [element, display] : m_elements) {
+    for (auto & element : m_element_container.get_dailies()) {
       element->set_use_nano_dose(false);
     }
   }
@@ -463,19 +411,19 @@ void MainWindow::_update_tank_size(const QString & text)
 
 void MainWindow::_update_iodine_drops(int drops)
 {
-  m_p_iodine_element->set_drops(drops);
+  m_element_container.iodine()->set_drops(drops);
   this->_refresh_elements();
 }
 
 void MainWindow::_update_vanadium_drops(int drops)
 {
-  m_p_vanadium_element->set_drops(drops);
+  m_element_container.vanadium()->set_drops(drops);
   this->_refresh_elements();
 }
 
 void MainWindow::_update_rubidium_selection(reef_moonshiners::RubidiumSelection rubidium_selection)
 {
-  m_p_rubidium_element->set_dosing_frequency(rubidium_selection);
+  m_element_container.rubidium()->set_dosing_frequency(rubidium_selection);
 }
 
 void MainWindow::_update_rubidium_start_date(QDate rubidium_start_date)
@@ -484,7 +432,7 @@ void MainWindow::_update_rubidium_start_date(QDate rubidium_start_date)
   rubidium_start_date.getDate(&year, &month, &day);
   const std::chrono::year_month_day date{
     std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
-  m_p_rubidium_element->set_initial_dose_date(date);
+  m_element_container.rubidium()->set_initial_dose_date(date);
 }
 
 void MainWindow::_handle_next_icp_selection_window(
@@ -578,24 +526,20 @@ void MainWindow::_handle_next_ati_entry_window(const QString & text, const QDate
   date.getDate(&year, &month, &day);
   const std::chrono::year_month_day date_of_sample{
     std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
-  for (auto &[element, display] : m_correction_elements) {
+  for (auto & element : m_element_container.get_corrections()) {
     /* set concentration */
     element->set_concentration(values[element->get_name()], date_of_sample);
   }
-  for (auto &[element, display] : m_dropper_elements) {
-    /* set concentration */
-    element->set_concentration(values[element->get_name()], date_of_sample);
-  }
-  for (auto &[element, display] : m_elements) {
+  for (auto & element : m_element_container.get_dailies()) {
     /* set concentration */
     element->set_concentration(values[element->get_name()], date_of_sample);
   }
   /* handle iodine */
   m_p_active_icp_selection_window = m_p_ati_correction_start_window;
-  m_p_ati_correction_start_window->set_iodine_increase(m_p_iodine_element->is_low());
-  m_p_ati_correction_start_window->set_iodine_decrease(m_p_iodine_element->is_high());
-  m_p_ati_correction_start_window->set_vanadium_increase(m_p_vanadium_element->is_low());
-  m_p_ati_correction_start_window->set_vanadium_decrease(m_p_vanadium_element->is_high());
+  m_p_ati_correction_start_window->set_iodine_increase(m_element_container.iodine()->is_low());
+  m_p_ati_correction_start_window->set_iodine_decrease(m_element_container.iodine()->is_high());
+  m_p_ati_correction_start_window->set_vanadium_increase(m_element_container.vanadium()->is_low());
+  m_p_ati_correction_start_window->set_vanadium_decrease(m_element_container.vanadium()->is_high());
   this->setEnabled(true);
   this->_activate_icp_import_dialog();
 }
@@ -606,9 +550,8 @@ void MainWindow::_handle_okay_ati_correction_start_window(const QDate & date)
   date.getDate(&year, &month, &day);
   const std::chrono::year_month_day start_date{
     std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
-  for (auto &[element, display] : m_correction_elements) {
+  for (auto & element : m_element_container.get_corrections()) {
     /* set concentration */
-    (void)display;
     element->set_correction_start_date(start_date);
   }
   m_p_active_icp_selection_window = nullptr;
@@ -679,35 +622,39 @@ void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
   }
   const std::chrono::year_month_day date_of_sample{
     std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
-  for (auto &[element, display] : m_correction_elements) {
+  for (auto & element : m_element_container.get_corrections()) {
     /* set concentration */
     element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
   }
-  for (auto &[element, display] : m_dropper_elements) {
-    /* set concentration */
-    element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
-  }
-  for (auto &[element, display] : m_elements) {
+  for (auto & element : m_element_container.get_dailies()) {
     /* set concentration */
     element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
     element->set_use_ms_mode(true);
-    fprintf(stderr, "'%s': dose '%lf' mL (current concentration: '%lf' ug / L, target: '%lf' ug / L)\n", element->get_name().c_str(), element->get_dose(date_of_sample), element->get_current_concentration_estimate(), element->get_target_concentration());
+    fprintf(
+      stderr,
+      "'%s': dose '%lf' mL (current concentration: '%lf' ug / L, target: '%lf' ug / L)\n",
+      element->get_name().c_str(), element->get_dose(
+        date_of_sample),
+      element->get_current_concentration_estimate(), element->get_target_concentration());
   }
   /* handle iodine */
   m_p_active_icp_selection_window = m_p_ati_correction_start_window;
-  m_p_ati_correction_start_window->set_iodine_increase(m_p_iodine_element->is_low());
-  m_p_ati_correction_start_window->set_iodine_decrease(m_p_iodine_element->is_high());
-  m_p_ati_correction_start_window->set_vanadium_increase(m_p_vanadium_element->is_low());
-  m_p_ati_correction_start_window->set_vanadium_decrease(m_p_vanadium_element->is_high());
+  m_p_ati_correction_start_window->set_iodine_increase(m_element_container.iodine()->is_low());
+  m_p_ati_correction_start_window->set_iodine_decrease(m_element_container.iodine()->is_high());
+  m_p_ati_correction_start_window->set_vanadium_increase(m_element_container.vanadium()->is_low());
+  m_p_ati_correction_start_window->set_vanadium_decrease(m_element_container.vanadium()->is_high());
   this->setEnabled(true);
   this->_activate_icp_import_dialog();
 }
 
 void MainWindow::_handle_increase_iodine()
 {
-  m_p_iodine_element->set_drops(m_p_iodine_element->get_dose(std::chrono::year_month_day{}) + 1);
+  m_element_container.iodine()->set_drops(
+    m_element_container.iodine()->get_dose(
+      std::chrono::
+      year_month_day{}) + 1);
   m_p_settings_window->get_iodine_spinbox()->setValue(
-    m_p_iodine_element->get_dose(
+    m_element_container.iodine()->get_dose(
       std::chrono::
       year_month_day{}));
   this->_refresh_elements();
@@ -715,9 +662,12 @@ void MainWindow::_handle_increase_iodine()
 
 void MainWindow::_handle_decrease_iodine()
 {
-  m_p_iodine_element->set_drops(m_p_iodine_element->get_dose(std::chrono::year_month_day{}) - 1);
+  m_element_container.iodine()->set_drops(
+    m_element_container.iodine()->get_dose(
+      std::chrono::
+      year_month_day{}) - 1);
   m_p_settings_window->get_iodine_spinbox()->setValue(
-    m_p_iodine_element->get_dose(
+    m_element_container.iodine()->get_dose(
       std::chrono::
       year_month_day{}));
   this->_refresh_elements();
@@ -725,21 +675,21 @@ void MainWindow::_handle_decrease_iodine()
 
 void MainWindow::_handle_increase_vanadium()
 {
-  m_p_vanadium_element->set_drops(
-    m_p_vanadium_element->get_dose(std::chrono::year_month_day{}) +
+  m_element_container.vanadium()->set_drops(
+    m_element_container.vanadium()->get_dose(std::chrono::year_month_day{}) +
     1);
   m_p_settings_window->get_vanadium_spinbox()->setValue(
-    m_p_vanadium_element->get_dose(std::chrono::year_month_day{}));
+    m_element_container.vanadium()->get_dose(std::chrono::year_month_day{}));
   this->_refresh_elements();
 }
 
 void MainWindow::_handle_decrease_vanadium()
 {
-  m_p_vanadium_element->set_drops(
-    m_p_vanadium_element->get_dose(std::chrono::year_month_day{}) -
+  m_element_container.vanadium()->set_drops(
+    m_element_container.vanadium()->get_dose(std::chrono::year_month_day{}) -
     1);
   m_p_settings_window->get_vanadium_spinbox()->setValue(
-    m_p_vanadium_element->get_dose(std::chrono::year_month_day{}));
+    m_element_container.vanadium()->get_dose(std::chrono::year_month_day{}));
   this->_refresh_elements();
 }
 

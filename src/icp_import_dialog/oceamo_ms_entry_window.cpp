@@ -55,7 +55,9 @@ QPushButton * OceamoMSEntryWindow::get_back_button() const
   return m_p_back_button;
 }
 
-void OceamoMSEntryWindow::show_pdf_load_error_message(const QString & text, const QPdfDocument::Error error)
+void OceamoMSEntryWindow::show_pdf_load_error_message(
+  const QString & text,
+  const QPdfDocument::Error error)
 {
   if (!m_error_message_showing) {
     QString content{text};

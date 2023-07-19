@@ -40,7 +40,9 @@ public:
 
   Q_SIGNAL void next_button_pressed(const QDate &);
 
-  void show_pdf_load_error_message(const QString & text, const QPdfDocument::Error error = QPdfDocument::Error::None);
+  void show_pdf_load_error_message(
+    const QString & text,
+    const QPdfDocument::Error error = QPdfDocument::Error::None);
   void hide_pdf_load_error_message();
 
 private:

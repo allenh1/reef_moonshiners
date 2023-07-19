@@ -29,7 +29,7 @@
 #include <QToolBar>
 #include <QStandardPaths>
 
-#include <reef_moonshiners/elements.hpp>
+#include <reef_moonshiners/element_container.hpp>
 
 #include <reef_moonshiners/ui/about_window.hpp>
 #include <reef_moonshiners/ui/element_display.hpp>
@@ -39,6 +39,7 @@
 #include <reef_moonshiners/ui/icp_import_dialog/ati_correction_start_window.hpp>
 #include <reef_moonshiners/ui/icp_import_dialog/oceamo_ms_entry_window.hpp>
 
+#include <set>
 
 namespace reef_moonshiners::ui
 {
@@ -93,7 +94,7 @@ protected:
   bool _load();
 
 private:
-  constexpr static size_t m_save_file_version = 4;  /* increment when changes happen to the format */
+  constexpr static size_t m_save_file_version = 5;  /* increment when changes happen to the format */
   int m_refugium_state = Qt::Unchecked;
   int m_nano_dose_state = Qt::Unchecked;
 
@@ -129,15 +130,8 @@ private:
 
   QDate m_oceamo_sample_date;
 
-  std::map<std::unique_ptr<reef_moonshiners::DailyElement>, ElementDisplay *> m_elements;
-  std::map<std::unique_ptr<reef_moonshiners::DropperElement>,
-    ElementDisplay *> m_dropper_elements;
-  reef_moonshiners::Iodine * m_p_iodine_element = nullptr;
-  reef_moonshiners::Vanadium * m_p_vanadium_element = nullptr;
-  std::unique_ptr<reef_moonshiners::Rubidium> m_p_rubidium_element = nullptr;
-  ElementDisplay * m_p_rubidium_display = nullptr;
-  std::map<std::unique_ptr<reef_moonshiners::CorrectionElement>,
-    ElementDisplay *> m_correction_elements;
+  std::set<ElementDisplay *> m_elements;
+  reef_moonshiners::ElementContainer m_element_container;
 };
 
 }  // namespace reef_moonshiners::ui

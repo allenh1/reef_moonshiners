@@ -17,52 +17,54 @@
 namespace reef_moonshiners
 {
 
-ElementContainer & ElementContainer::get()
+std::ostream & operator<<(std::ostream & stream, const reef_moonshiners::ElementContainer & element)
 {
-  if (nullptr == m_p_instance) {
-    m_p_instance = new ElementContainer();
-  }
-  return *m_p_instance;
+  element.m_barium.write_to(stream);
+  element.m_bromine.write_to(stream);
+  element.m_boron.write_to(stream);
+  element.m_fluorine.write_to(stream);
+  element.m_molybdenum.write_to(stream);
+  element.m_nickel.write_to(stream);
+  element.m_zinc.write_to(stream);
+  element.m_strontium.write_to(stream);
+  element.m_potassium.write_to(stream);
+
+  element.m_manganese.write_to(stream);
+  element.m_chromium.write_to(stream);
+  element.m_selenium.write_to(stream);
+  element.m_cobalt.write_to(stream);
+  element.m_iron.write_to(stream);
+
+  element.m_iodine.write_to(stream);
+  element.m_vanadium.write_to(stream);
+
+  element.m_rubidium.write_to(stream);
+  return stream;
 }
 
-constexpr ElementBase * ElementContainer::operator[](std::string_view _name)
+std::istream & operator>>(std::istream & stream, reef_moonshiners::ElementContainer & element)
 {
-  if (_name == "Barium") {
-      return &m_barium;
-  } else if (_name == "Bromine") {
-    return &m_bromine;
-  } else if (_name == "Boron") {
-    return &m_boron;
-  } else if (_name == "Fluorine") {
-    return &m_fluorine;
-  } else if (_name == "Molybdenum") {
-    return &m_molybdenum;
-  } else if (_name == "Nickel") {
-    return &m_nickel;
-  } else if (_name == "Zinc") {
-    return &m_zinc;
-  } else if (_name == "Strontium") {
-    return &m_strontium;
-  } else if (_name == "Potassium") {
-    return &m_potassium;
-  } else if (_name == "Manganese") {
-    return &m_manganese;
-  } else if (_name == "Chromium") {
-    return &m_chromium;
-  } else if (_name == "Selenium") {
-    return &m_selenium;
-  } else if (_name == "Cobalt") {
-    return &m_cobalt;
-  } else if (_name == "Iron") {
-    return &m_iron;
-  } else if (_name == "Iodine") {
-    return &m_iodine;
-  } else if (_name == "Vanadium") {
-    return &m_vanadium;
-  } else if (_name == "Rubidium") {
-    return &m_rubidium;
-  }
-  return nullptr;
+  element.m_barium.read_from(stream);
+  element.m_bromine.read_from(stream);
+  element.m_boron.read_from(stream);
+  element.m_fluorine.read_from(stream);
+  element.m_molybdenum.read_from(stream);
+  element.m_nickel.read_from(stream);
+  element.m_zinc.read_from(stream);
+  element.m_strontium.read_from(stream);
+  element.m_potassium.read_from(stream);
+
+  element.m_manganese.read_from(stream);
+  element.m_chromium.read_from(stream);
+  element.m_selenium.read_from(stream);
+  element.m_cobalt.read_from(stream);
+  element.m_iron.read_from(stream);
+
+  element.m_iodine.read_from(stream);
+  element.m_vanadium.read_from(stream);
+
+  element.m_rubidium.read_from(stream);
+  return stream;
 }
-  
+
 }  // namespace reef_moonshiners

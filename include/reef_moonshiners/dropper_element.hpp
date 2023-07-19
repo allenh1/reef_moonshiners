@@ -47,8 +47,6 @@ public:
 private:
   /// number of drops to dose
   size_t m_drops;
-  /// upper bound for concentration in micrograms per liter
-  const double m_high_concentration;
 };
 
 }  // namespace reef_moonshiners

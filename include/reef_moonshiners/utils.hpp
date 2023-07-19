@@ -71,7 +71,7 @@ concept string_type = requires(T & t) {
   t.size();
   T("foo");
 };
-  
+
 template<trivial_type T>
 constexpr void binary_out(std::ostream & stream, const T & obj)
 {

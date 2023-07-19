@@ -21,8 +21,7 @@ DropperElement::DropperElement(
   const std::string & _name,
   const double _low_concentration,
   const double _high_concentration)
-: DailyElement(_name, 0.0, 0.0, _low_concentration, 0.0),
-  m_high_concentration(_high_concentration)
+: DailyElement(_name, 0.0, 0.0, _low_concentration, _high_concentration, 0.0, 0.0)
 {
   this->set_dosing_unit(DosingUnit::DROPS);
 }
@@ -44,12 +43,12 @@ double DropperElement::get_dose(const std::chrono::year_month_day &) const
 
 bool DropperElement::is_low() const
 {
-  return this->get_current_concentration_estimate() < this->get_target_concentration();
+  return this->get_current_concentration_estimate() < this->m_target_concentration_low;
 }
 
 bool DropperElement::is_high() const
 {
-  return this->get_current_concentration_estimate() > m_high_concentration;
+  return this->get_current_concentration_estimate() > this->m_target_concentration_high;
 }
 
 void DropperElement::write_to(std::ostream & stream) const
