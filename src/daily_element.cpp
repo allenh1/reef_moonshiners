@@ -26,7 +26,8 @@ DailyElement::DailyElement(
   const double _target_concentration_high,
   const double _base_adjustment,
   const double _max_adjustment)
-: ElementBase(_name, _element_concentration, _target_concentration_low, _max_adjustment),
+: ElementBase(_name, _element_concentration, _base_adjustment, 1.0),
+  m_target_concentration_low(_target_concentration_low),
   m_target_concentration_high(_target_concentration_high),
   m_nano_concentration(_nano_element_concentration),
   m_base_adjustment(_base_adjustment)

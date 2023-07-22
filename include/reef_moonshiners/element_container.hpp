@@ -17,6 +17,8 @@
 
 #include <reef_moonshiners/elements.hpp>
 
+#include <vector>
+
 namespace reef_moonshiners
 {
 

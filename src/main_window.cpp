@@ -270,13 +270,11 @@ bool MainWindow::_load()
   m_p_settings_window->get_refugium_checkbox()->setCheckState(Qt::CheckState(m_refugium_state));
   if (save_file_version < 5) {
     /* TODO(allenh1): report as unsupported, warn for data loss */
-    _fill_element_list();
     return false;
   }
+  binary_in(file, m_nano_dose_state);
   m_p_settings_window->get_nano_dose_checkbox()->setCheckState(Qt::CheckState(m_nano_dose_state));
   file >> m_element_container;
-
-  _fill_element_list();
 
   m_p_settings_window->get_iodine_spinbox()->setValue(
     (int)m_element_container.iodine()->get_dose(std::chrono::year_month_day{}));
