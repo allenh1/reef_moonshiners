@@ -22,13 +22,12 @@ SettingsWindow::SettingsWindow(QWidget * parent)
 {
   m_p_tank_size_edit = new QLineEdit(tr("75.0"), this);
   m_p_tank_size_label = new QLabel(tr("Tank Size (gallons):"), this);
-  m_p_refugium_label = new QLabel(tr("Refugium:"), this);
   m_p_iodine_label = new QLabel(tr("Iodide drops (2-3 per 100 gallons):"));
   m_p_vanadium_label = new QLabel(tr("Vanadium drops (1-2 per 100 gallons):"));
   m_p_rubidium_label = new QLabel(tr("Rubidium Frequency:"));
   m_p_rubidium_start_label = new QLabel(tr("Initial Rubidium Dose:"));
   m_p_okay_button = new QPushButton(tr("&Okay"));
-  m_p_refugium_checkbox = new QCheckBox(this);
+  m_p_element_settings_button = new QPushButton(tr("Element Settings"));
   m_p_rubidium_combobox = new QComboBox();
   m_p_rubidium_start_dateedit = new QDateEdit();
   m_p_iodine_drop_edit = new QSpinBox();
@@ -59,12 +58,8 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_rubidium_start_layout->addWidget(m_p_rubidium_start_label);
   m_p_rubidium_start_layout->addWidget(m_p_rubidium_start_dateedit);
 
-  m_p_refugium_layout = new QHBoxLayout();
-  m_p_refugium_layout->addWidget(m_p_refugium_label);
-  m_p_refugium_layout->addWidget(m_p_refugium_checkbox);
-
   m_p_okay_button_layout = new QHBoxLayout();
-  m_p_okay_button_layout->addSpacing(this->size().width() / 2);
+  m_p_okay_button_layout->addWidget(m_p_element_settings_button);
   m_p_okay_button_layout->addWidget(m_p_okay_button);
 
   m_p_nano_dose_layout = new QHBoxLayout();
@@ -82,11 +77,9 @@ SettingsWindow::SettingsWindow(QWidget * parent)
   m_p_main_layout->addLayout(m_p_vanadium_layout);
   m_p_main_layout->addLayout(m_p_rubidium_layout);
   m_p_main_layout->addLayout(m_p_rubidium_start_layout);
-  m_p_main_layout->addLayout(m_p_refugium_layout);
   m_p_main_layout->addLayout(m_p_okay_button_layout);
 
   this->setLayout(m_p_main_layout);
-  m_p_refugium_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
   m_p_nano_dose_checkbox->setStyleSheet(tr("QCheckBox::indicator {width: 30px; height: 30px}"));
 #ifdef WIN32
   m_p_nano_dose_checkbox->setDisabled(true);
@@ -101,11 +94,6 @@ SettingsWindow::SettingsWindow(QWidget * parent)
 QLineEdit * SettingsWindow::get_tank_size_edit()
 {
   return m_p_tank_size_edit;
-}
-
-QCheckBox * SettingsWindow::get_refugium_checkbox()
-{
-  return m_p_refugium_checkbox;
 }
 
 QSpinBox * SettingsWindow::get_iodine_spinbox()
@@ -133,17 +121,14 @@ QPushButton * SettingsWindow::get_okay_button()
   return m_p_okay_button;
 }
 
+QPushButton * SettingsWindow::get_element_settings_button()
+{
+  return m_p_element_settings_button;
+}
+
 QCheckBox * SettingsWindow::get_nano_dose_checkbox()
 {
   return m_p_nano_dose_checkbox;
 }
 
-void SettingsWindow::resizeEvent(QResizeEvent * event)
-{
-  this->QWidget::resizeEvent(event);
-  QLayoutItem * item = m_p_okay_button_layout->itemAt(0);  /* spacer */
-  m_p_okay_button_layout->removeItem(item);
-  m_p_okay_button_layout->insertSpacing(0, this->size().width() / 2);
-  m_p_okay_button_layout->addWidget(m_p_okay_button);
-}
 }  // namespace reef_moonshiners::ui

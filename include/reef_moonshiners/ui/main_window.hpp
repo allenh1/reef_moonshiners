@@ -33,6 +33,7 @@
 
 #include <reef_moonshiners/ui/about_window.hpp>
 #include <reef_moonshiners/ui/element_display.hpp>
+#include <reef_moonshiners/ui/element_settings.hpp>
 #include <reef_moonshiners/ui/settings_window.hpp>
 #include <reef_moonshiners/ui/icp_import_dialog/icp_selection_window.hpp>
 #include <reef_moonshiners/ui/icp_import_dialog/ati_entry_window.hpp>
@@ -63,9 +64,9 @@ protected:
   Q_SLOT void _activate_calendar_window();
   Q_SLOT void _activate_icp_import_dialog();
   Q_SLOT void _activate_settings_window();
+  Q_SLOT void _activate_element_settings();
   Q_SLOT void _activate_oceamo_file_browser();
 
-  Q_SLOT void _update_refugium_state(int state);
   Q_SLOT void _update_nano_dose_state(int state);
   Q_SLOT void _update_tank_size(const QString & text);
   Q_SLOT void _update_iodine_drops(int drops);
@@ -95,7 +96,6 @@ protected:
 
 private:
   constexpr static size_t m_save_file_version = 5;  /* increment when changes happen to the format */
-  int m_refugium_state = Qt::Unchecked;
   int m_nano_dose_state = Qt::Unchecked;
 
   QVBoxLayout * m_p_main_layout = nullptr;
@@ -113,6 +113,7 @@ private:
   QFileDialog * m_p_oceamo_file_browser = nullptr;
 
   SettingsWindow * m_p_settings_window = nullptr;
+  ElementSettings * m_p_element_settings = nullptr;
   AboutWindow * m_p_about_window = nullptr;
 
   icp_import_dialog::IcpSelectionWindow * m_p_icp_selection_window = nullptr;

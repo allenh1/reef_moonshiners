@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget * parent)
 
   /* construct windows */
   m_p_settings_window = new SettingsWindow(this);
+  m_p_element_settings = new ElementSettings(&m_element_container, this);
   m_p_icp_selection_window = new icp_import_dialog::IcpSelectionWindow(this);
   m_p_ati_entry_window = new icp_import_dialog::ATIEntryWindow(this);
   m_p_ati_correction_start_window = new icp_import_dialog::ATICorrectionStartWindow(this);
@@ -94,9 +95,6 @@ MainWindow::MainWindow(QWidget * parent)
 
   /* connections from settings window */
   QObject::connect(
-    m_p_settings_window->get_refugium_checkbox(), &QCheckBox::stateChanged, this,
-    &MainWindow::_update_refugium_state);
-  QObject::connect(
     m_p_settings_window->get_tank_size_edit(), &QLineEdit::textChanged, this,
     &MainWindow::_update_tank_size);
   QObject::connect(
@@ -115,8 +113,16 @@ MainWindow::MainWindow(QWidget * parent)
     m_p_settings_window->get_okay_button(), &QPushButton::clicked,
     this, &MainWindow::_activate_calendar_window);
   QObject::connect(
+    m_p_settings_window->get_element_settings_button(), &QPushButton::clicked,
+    this, &MainWindow::_activate_element_settings);
+  QObject::connect(
     m_p_settings_window->get_nano_dose_checkbox(), &QCheckBox::stateChanged,
     this, &MainWindow::_update_nano_dose_state);
+
+  /* connections from element settings window */
+  QObject::connect(
+   m_p_element_settings->get_okay_button(), &QPushButton::clicked,
+   this, &MainWindow::_activate_settings_window);
 
   /* connections from ICP Dialog */
   QObject::connect(
@@ -236,7 +242,7 @@ void MainWindow::_save()
   std::ofstream file{out, std::ios::binary};
   binary_out(file, m_save_file_version);
   binary_out(file, reef_moonshiners::ElementBase::get_tank_size());
-  binary_out(file, m_refugium_state);
+  binary_out(file, 0);  /* previously refugium state */
   binary_out(file, m_nano_dose_state);
   file << m_element_container;
 }
@@ -266,8 +272,8 @@ bool MainWindow::_load()
   reef_moonshiners::ElementBase::set_tank_size(tank_size);
   const double gallons = reef_moonshiners::liters_to_gallons(tank_size);
   m_p_settings_window->get_tank_size_edit()->setText(QString().setNum(gallons));
-  binary_in(file, m_refugium_state);
-  m_p_settings_window->get_refugium_checkbox()->setCheckState(Qt::CheckState(m_refugium_state));
+  int refugium_state;
+  binary_in(file, refugium_state);  /* not used */
   if (save_file_version < 5) {
     /* TODO(allenh1): report as unsupported, warn for data loss */
     return false;
@@ -308,6 +314,20 @@ void MainWindow::_activate_settings_window()
   m_p_active_action->setEnabled(true);
   m_p_active_action = m_p_settings_action;
   m_p_active_window = m_p_settings_window;
+}
+
+void MainWindow::_activate_element_settings()
+{
+  /* change view to element settings window */
+  m_p_active_window = this->takeCentralWidget();
+  m_p_element_settings->refresh_values();
+  this->setCentralWidget(m_p_element_settings);
+  /* grey out settings action */
+  m_p_settings_action->setDisabled(true);
+  /* un-grey out the calendar widget */
+  m_p_active_action->setEnabled(true);
+  m_p_active_action = m_p_settings_action;
+  m_p_active_window = m_p_element_settings;
 }
 
 void MainWindow::_activate_calendar_window()
@@ -361,21 +381,6 @@ void MainWindow::_activate_about_window()
   m_p_active_action->setEnabled(true);
   m_p_active_action = m_p_about_action;
   m_p_active_window = m_p_about_window;
-}
-
-void MainWindow::_update_refugium_state(int state)
-{
-  if (Qt::Checked == state) {
-    for (auto & element : m_element_container.get_dailies()) {
-      element->set_multiplier(2.0);  /* this doubles the daily dose */
-    }
-  } else if (Qt::Unchecked == state) {
-    for (auto & element : m_element_container.get_dailies()) {
-      element->set_multiplier(1.0);
-    }
-  }
-  m_refugium_state = state;
-  this->_refresh_elements();
 }
 
 void MainWindow::_update_nano_dose_state(int state)

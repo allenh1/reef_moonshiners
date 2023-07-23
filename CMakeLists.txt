@@ -49,6 +49,7 @@ target_compile_features(reef_moonshiners PUBLIC c_std_11 cxx_std_20)  # Require 
 
 set(ui_sources
   src/about_window.cpp
+  src/element_settings.cpp
   src/main_window.cpp
   src/reef_moonshiners.cpp
   src/settings_window.cpp
@@ -61,6 +62,7 @@ set(ui_sources
 set(ui_headers
   include/reef_moonshiners/ui/about_window.hpp
   include/reef_moonshiners/ui/element_display.hpp
+  include/reef_moonshiners/ui/element_settings.hpp
   include/reef_moonshiners/ui/main_window.hpp
   include/reef_moonshiners/ui/settings_window.hpp
   include/reef_moonshiners/ui/icp_import_dialog/ati_correction_start_window.hpp
