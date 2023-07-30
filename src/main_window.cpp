@@ -623,6 +623,9 @@ void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
       element_concentration_map[element.toStdString()] = concentration * 1E3;
     }
   }
+  /* Bromide / Fluoride is a special case for Oceamo, where others say bromine */
+  element_concentration_map["Bromine"] = element_concentration_map["Bromide"];
+  element_concentration_map["Fluorine"] = element_concentration_map["Fluoride"];
   const std::chrono::year_month_day date_of_sample{
     std::chrono::year(year), std::chrono::month(month), std::chrono::day(day)};
   for (auto & element : m_element_container.get_corrections()) {
