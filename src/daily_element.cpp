@@ -24,41 +24,38 @@ DailyElement::DailyElement(
   const double _nano_element_concentration,
   const double _target_concentration_low,
   const double _target_concentration_high,
-  const double _base_adjustment,
-  const double _max_adjustment)
+  const double _base_adjustment)
 : ElementBase(_name, _element_concentration, _base_adjustment, 1.0),
   m_target_concentration_low(_target_concentration_low),
   m_target_concentration_high(_target_concentration_high),
-  m_nano_concentration(_nano_element_concentration),
-  m_base_adjustment(_base_adjustment)
+  m_nano_concentration(_nano_element_concentration)
 {
 }
 
 double DailyElement::get_dose(const std::chrono::year_month_day &) const
 {
-  if (m_use_nano_dose) {
-    return get_nano_dose();
-  }
-  if (this->get_current_concentration_estimate() >= this->get_target_concentration()) {
+  if (this->get_current_concentration_estimate() >= m_target_concentration_high) {
     /* no need to supplement this, we should not be detecting these elements */
     return 0.0;
   }
   const double dose_in_liters =
     ((this->get_target_concentration() * this->get_tank_size()) /
-    (this->get_element_concentration() - this->get_target_concentration()));
+     (m_use_nano_dose ? m_nano_concentration : this->get_element_concentration()));
   return round_places<2>(dose_in_liters * 1E3) * m_multiplier;
 }
 
-double DailyElement::get_nano_dose() const
+double DailyElement::get_upper_concentration_bound() const
 {
-  if (this->get_current_concentration_estimate() >= this->get_target_concentration()) {
-    /* no need to supplement this, we should not be detecting these elements */
-    return 0.0;
+  return m_use_ms_mode ? m_target_concentration_high : 0.0;
+}
+
+void DailyElement::update_multiplier_from_ms_results()
+{
+  if (this->get_last_measured_concentration() < m_target_concentration_low) {
+    this->set_multiplier(this->get_multiplier() + 1);
+  } else if (this->get_last_measured_concentration() > m_target_concentration_high) {
+    this->set_multiplier(this->get_multiplier() - 1);
   }
-  const double dose_in_liters =
-    ((this->get_target_concentration() * this->get_tank_size()) /
-    (m_nano_concentration - this->get_target_concentration()));
-  return round_places<2>(dose_in_liters * 1E3) * m_multiplier;
 }
 
 double DailyElement::get_current_concentration_estimate() const
@@ -117,16 +114,12 @@ void DailyElement::read_from(std::istream & stream)
 {
   this->ElementBase::read_from(stream);
   binary_in(stream, m_multiplier);
-  if (reef_moonshiners::ElementBase::m_load_version >= 3) {
-    int nano_dose;
-    binary_in(stream, nano_dose);
-    m_use_nano_dose = nano_dose;
-  }
-  if (reef_moonshiners::ElementBase::m_load_version >= 4) {
-    int use_ms_mode;
-    binary_in(stream, use_ms_mode);
-    m_use_ms_mode = use_ms_mode;
-  }
+  int nano_dose;
+  binary_in(stream, nano_dose);
+  m_use_nano_dose = nano_dose;
+  int use_ms_mode;
+  binary_in(stream, use_ms_mode);
+  m_use_ms_mode = use_ms_mode;
 }
 
 }  // namespace reef_moonshiners

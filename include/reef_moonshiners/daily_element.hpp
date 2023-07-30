@@ -28,7 +28,6 @@ public:
     const double _nano_element_concentration,
     const double _target_concentration_low,
     const double _target_concentration_high,
-    const double _max_adjustment,
     const double _base_adjustment);
   ~DailyElement() override = default;
 
@@ -52,6 +51,8 @@ public:
 
   bool get_use_ms_mode() const;
 
+  void update_multiplier_from_ms_results();
+
   void write_to(std::ostream & stream) const override;
 
   void read_from(std::istream & stream) override;
@@ -60,6 +61,8 @@ protected:
   /* these provide a range for the concentration to fall within */
   double m_target_concentration_low = 0.0;
   double m_target_concentration_high = 0.0;
+
+  double get_upper_concentration_bound() const;
 
 private:
   double m_multiplier = 1.0;
@@ -75,7 +78,7 @@ private:
   struct name : public DailyElement { \
     name() : DailyElement( \
         #name, (element_concentration), (nano_element_concentration), (target_concentration_low), \
-        (target_concentration_high), (base_adjustment), (1.0)) {} }
+        (target_concentration_high), (base_adjustment)) {} }
 }  // namespace reef_moonshiners
 
 #endif  // REEF_MOONSHINERS__DAILY_ELEMENT_HPP_
