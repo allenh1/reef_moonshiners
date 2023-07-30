@@ -535,6 +535,7 @@ void MainWindow::_handle_next_ati_entry_window(const QString & text, const QDate
   }
   for (auto & element : m_element_container.get_dailies()) {
     /* set concentration */
+    element->set_use_ms_mode(false);
     element->set_concentration(values[element->get_name()], date_of_sample);
   }
   /* handle iodine */
@@ -637,11 +638,6 @@ void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
     element->set_use_ms_mode(true);
     element->set_concentration(element_concentration_map[element->get_name()], date_of_sample);
     element->update_multiplier_from_ms_results();
-    fprintf(
-      stderr,
-      "'%s': dose '%lf' mL (current concentration: '%lf' ug / L, target: '%lf' ug / L)\n",
-      element->get_name().c_str(), element->get_dose(date_of_sample),
-      element->get_current_concentration_estimate(), element->get_target_concentration());
   }
   /* handle iodine */
   m_p_active_icp_selection_window = m_p_ati_correction_start_window;
