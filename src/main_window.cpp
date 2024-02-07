@@ -593,7 +593,7 @@ void MainWindow::_handle_oceamo_ms_analysis_selected(const QString & file)
   QString page_2 = ms_results.getAllText(1).text();
   QRegularExpression re_ug_l{"(\\w+) (\\d+,?\\d*).*µg/l"};
   QRegularExpression re_mg_l{"(\\w+) (\\d+,?\\d*).*mg/l"};
-  QRegularExpression re_date_sample{"Date of Sampling: (\\d+)\.(\\d+)\.(\\d+)"};
+  QRegularExpression re_date_sample{"Date of Sampling: (\\d+).(\\d+).(\\d+)"};
   int day = -1;
   int month;
   int year;
